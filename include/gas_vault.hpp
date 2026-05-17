@@ -47,31 +47,30 @@ public:
         return sol_reserves_.load() >= gas_lamports;
     }
 
-    // Protocol pays gas using staked compute first, then reserves
+    // Protocol pays gas using user's staked compute allowance first, then reserves
     bool pay_gas(const std::string& user_address, uint64_t gas_lamports) {
-        // Check if we can cover (either via compute or reserves)
-        if (!can_cover_gas(gas_lamports)) {
-            return false;
-        }
-
         // Rate limiting check
         std::lock_guard<std::mutex> lock(mutex_);
         if (user_tx_counts_[user_address] > 1000) {  // max 1000 txs per user
             return false;
         }
 
-        // Priority: use staked compute credits first
-        if (compute_staking_ && compute_staking_->total_cpu_cores() > 0) {
-            // Gas is subsidized by staked compute
-            gas_paid_by_compute_ += gas_lamports;
-        } else {
-            // Fallback to protocol reserves
-            if (sol_reserves_ < gas_lamports) {
-                return false;
+        // Priority: use user's gas allowance from their staked compute
+        if (compute_staking_) {
+            if (compute_staking_->consume_gas_allowance(user_address, gas_lamports)) {
+                // User's gas allowance covers this transaction
+                gas_paid_by_compute_ += gas_lamports;
+                total_gas_paid_ += gas_lamports;
+                user_tx_counts_[user_address]++;
+                return true;
             }
-            sol_reserves_ -= gas_lamports;
         }
 
+        // Fallback to protocol reserves
+        if (sol_reserves_ < gas_lamports) {
+            return false;
+        }
+        sol_reserves_ -= gas_lamports;
         total_gas_paid_ += gas_lamports;
         user_tx_counts_[user_address]++;
         return true;

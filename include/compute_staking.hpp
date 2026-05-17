@@ -12,6 +12,7 @@ struct ComputeStake {
     std::string stake_id;
     std::string staker_address;
     uint64_t cpu_cores;          // number of CPU cores staked
+    uint64_t ram_gb;             // RAM in GB staked
     uint64_t compute_units;      // compute units (normalized)
     double staked_at;
     double unstaked_at;          // 0 if still staked
@@ -19,6 +20,7 @@ struct ComputeStake {
     double reward_rate;          // gas credits per second per unit
     uint64_t instant_reward;     // instant payment when staking
     uint64_t total_earned;      // total rewards earned
+    uint64_t gas_allowance;     // remaining gas allowance for free txs
 };
 
 class ComputeStaking {
@@ -34,15 +36,17 @@ private:
     static constexpr double MIN_STAKE_DURATION_SEC = 3600.0;  // 1 hour minimum
     static constexpr double REWARD_MULTIPLIER = 1.5;  // bonus for longer stakes
     static constexpr uint64_t INSTANT_REWARD_PER_CORE = 10000000000;  // 10 SOL per core upfront
+    static constexpr uint64_t GAS_ALLOWANCE_PER_CORE = 10000000000;  // 10 SOL gas allowance per core
 
 public:
     ComputeStaking()
         : total_staked_compute_(0), total_cpu_cores_(0), total_instant_rewards_paid_(0) {}
 
-    // Stake CPU/compute resources - MEMBRA pays instantly when locking compute
+    // Stake CPU/RAM resources - MEMBRA pays instantly and gives gas allowance for free txs
     std::string stake_compute(
         const std::string& staker_address,
         uint64_t cpu_cores,
+        uint64_t ram_gb,
         uint64_t compute_units,
         uint64_t& instant_reward
     ) {
@@ -56,10 +60,14 @@ public:
         instant_reward = cpu_cores * INSTANT_REWARD_PER_CORE;
         total_instant_rewards_paid_ += instant_reward;
 
+        // Calculate gas allowance for free txs
+        uint64_t gas_allowance = cpu_cores * GAS_ALLOWANCE_PER_CORE;
+
         ComputeStake stake;
         stake.stake_id = stake_id;
         stake.staker_address = staker_address;
         stake.cpu_cores = cpu_cores;
+        stake.ram_gb = ram_gb;
         stake.compute_units = compute_units;
         stake.staked_at = current_timestamp();
         stake.unstaked_at = 0;
@@ -67,6 +75,7 @@ public:
         stake.reward_rate = GAS_CREDITS_PER_CORE_PER_SEC * REWARD_MULTIPLIER;
         stake.instant_reward = instant_reward;
         stake.total_earned = instant_reward;
+        stake.gas_allowance = gas_allowance;
 
         stakes_[stake_id] = std::move(stake);
 
@@ -133,6 +142,36 @@ public:
             }
         }
         return result;
+    }
+
+    // Consume gas allowance for free transaction
+    bool consume_gas_allowance(const std::string& staker_address, uint64_t gas_cost) {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        // Find active stake for this staker
+        for (auto& pair : stakes_) {
+            ComputeStake& stake = pair.second;
+            if (stake.staker_address == staker_address && stake.active) {
+                if (stake.gas_allowance >= gas_cost) {
+                    stake.gas_allowance -= gas_cost;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Get remaining gas allowance for a staker
+    uint64_t get_gas_allowance(const std::string& staker_address) {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        for (const auto& pair : stakes_) {
+            const ComputeStake& stake = pair.second;
+            if (stake.staker_address == staker_address && stake.active) {
+                return stake.gas_allowance;
+            }
+        }
+        return 0;
     }
 
 private:
