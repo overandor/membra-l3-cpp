@@ -1,14 +1,14 @@
 # MEMBRA Layer-3 C++ Implementation
 
-High-performance C++ implementation of MEMBRA L3 protocol with **compute-collateralized gas model with compute credits and futures market**.
+High-performance C++ implementation of MEMBRA L3 protocol with **compute-collateralized gas model with MEMBRA gas credits and futures market**.
 
 ## ⚠️ CRITICAL DISCLAIMER
 
-**COMPUTE CREDITS ARE NOT SOL. COMPUTE DOES NOT CREATE MONEY.**
+**MEMBRA GAS CREDITS ARE NOT SOL. COMPUTE DOES NOT CREATE MONEY.**
 
-- Compute staking issues **compute credits**, not SOL
-- Credits are redeemable **only from a funded RewardVault**
-- Rewards require **paid API usage, treasury funding, or external demand**
+- Compute staking issues **MEMBRA Gas Credits** (internal accounting units)
+- Gas Credits make MEMBRA intents sender-gasless
+- **Real Solana fees still require funded GasVault, relayer, or receiver-paid settlement**
 - **DO NOT** expect guaranteed passive income from staking compute
 - Hardware depreciation and electricity costs may exceed earnings
 - This is a **simulation/prototype** for development and testing
@@ -17,16 +17,16 @@ High-performance C++ implementation of MEMBRA L3 protocol with **compute-collate
 
 ## Key Features
 
-### 1. Stake CPU/RAM to Send Transactions for Free
+### 1. Stake CPU/RAM to Receive MEMBRA Gas Credits
 
-**Users stake their own CPU and RAM to send transactions for free.** MEMBRA issues compute credits when compute is locked.
+**Users lock CPU/RAM to receive MEMBRA Gas Credits.** These credits make MEMBRA intents sender-gasless.
 
-- User stakes CPU/RAM → Gets compute credits + gas allowance
-- User sends transactions for free using gas allowance
-- Sender pays: 0 SOL (uses gas allowance from staked compute)
+- User locks CPU/RAM → Gets MEMBRA Gas Credits
+- User sends gasless MEMBRA intents using gas credits
+- Sender pays: 0 SOL (gas accounted against credits)
 - Receiver pays: 0 SOL
-- Reserves: Backup only (used when gas allowance exhausted)
-- **Compute credits are NOT SOL - redeemable only from funded vault**
+- **Real Solana fees require funded GasVault, relayer, or receiver-paid model**
+- **Gas Credits are NOT redeemable for SOL - internal accounting only**
 
 ### 2. Compute Futures Market
 
@@ -50,14 +50,13 @@ High-performance C++ implementation of MEMBRA L3 protocol with **compute-collate
 ## How It Works
 
 ### Staking Flow
-1. **User stakes CPU cores + RAM** (e.g., 4 cores + 16 GB RAM)
-2. **MEMBRA issues compute credits** (10 credit units per core) → User gets 40 credit units
-3. **User gets gas allowance** (10 SOL per core) → 40 SOL for free transactions
-4. **User sends transactions for free** using gas allowance
-5. Gas allowance decreases with each transaction
-6. When exhausted, user can stake more or wait for time-based rewards
-7. After 1 hour minimum, user can unstake and claim additional time-based credits
-8. **Credits can be redeemed for SOL only if RewardVault is funded** (by API usage, treasury, or external demand)
+1. **User locks CPU cores + RAM** (e.g., 4 cores + 16 GB RAM)
+2. **MEMBRA issues gas credits** (10 SOL-equivalent credits per core)
+3. **User gets gas credit allowance** (10 SOL-equivalent credits per core)
+4. **User sends gasless MEMBRA intents** using gas credits
+5. Gas credits are debited when intents settle
+6. **Real Solana fees** require funded GasVault, relayer, or receiver-paid model
+7. Gas credits are **internal MEMBRA accounting**, not redeemable for SOL
 
 ### Futures Flow
 1. **Compute Price Oracle** tracks CPU and RAM prices in real-time
@@ -112,39 +111,43 @@ make
 ### Sustainability Considerations
 
 This model can be sustainable long-term only if:
-- Users stake real compute resources (CPU/RAM) to get free gas
-- MEMBRA issues compute credits from **funded RewardVault only** (not money creation)
-- Gas allowance is tied to amount staked (10 SOL gas allowance per core)
+- Users lock real compute resources (CPU/RAM) to receive gas credits
+- MEMBRA issues gas credits for internal fee accounting (not money creation)
+- Gas credits make MEMBRA intents sender-gasless
+- **Real Solana fees require funded GasVault, relayer, or receiver-paid settlement**
 - Protocol reserves only used as backup
 - Futures market provides price discovery and hedging
 - No unlimited money creation - compute is a real resource
-- **Rewards require paid API usage, treasury funding, or external demand**
+- **Gas Credits are NOT redeemable for SOL**
 
 ### ⚠️ Earnings Reality Check
 
 For an M5 MacBook Pro ($3000):
-- Staking 12 cores might earn **compute credits**, not SOL
-- Credits are redeemable **only if RewardVault is funded**
-- To earn $10 worth of SOL, the network must have **at least $10 of funded rewards or paid inference demand**
-- Hardware depreciation (~$300-500/year) may exceed earnings
-- Electricity costs ($20-50/month depending on usage) may exceed earnings
-- **DO NOT** stake compute expecting guaranteed passive income
-- Consider this as a way to subsidize your own gas usage, not as income
+- Locking 12 cores issues **MEMBRA Gas Credits** (not SOL)
+- Gas Credits are for internal MEMBRA fee accounting only
+- **Gas Credits are NOT redeemable for SOL**
+- To use MEMBRA, you need funded GasVault, relayer, or receiver-paid model
+- Hardware depreciation (~$300-500/year) may exceed benefits
+- Electricity costs ($20-50/month depending on usage) may exceed benefits
+- **DO NOT** lock compute expecting to earn SOL
+- Gas Credits subsidize your own MEMBRA usage, not generate income
 
 ### Correct Model
 
 ```
-M5 compute locked
+User locks CPU/RAM
 ↓
-benchmark + proof receipt
+MEMBRA measures and records compute collateral
 ↓
-compute credits issued (NOT SOL)
+User receives MEMBRA Gas Credits
 ↓
-user/API demand funds RewardVault
+User can submit "gasless" MEMBRA intents
 ↓
-credits become redeemable
+A relayer/GasVault pays real Solana SOL fees if settlement touches Solana
 ↓
-RewardVault pays SOL only if funded
+Gas Credits are burned/accounted against the user's allowance
+↓
+ProofBook records the transaction
 ```
 
 ### Compensation Caps

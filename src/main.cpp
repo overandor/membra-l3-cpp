@@ -18,11 +18,11 @@ using namespace membra;
 
 int main() {
     std::cout << "MEMBRA Layer-3 C++ Implementation\n";
-    std::cout << "Compute-Collateralized Gas Model with Compute Credits\n";
-    std::cout << "Users stake CPU/RAM to send transactions for free\n";
-    std::cout << "MEMBRA issues compute credits (not SOL) when compute is locked\n";
-    std::cout << "Credits are redeemable only from funded RewardVault\n";
-    std::cout << "Compute Futures Market: Trade futures on CPU/RAM prices\n\n";
+    std::cout << "Compute-Collateralized Gas Model with MEMBRA Gas Credits\n";
+    std::cout << "Users lock CPU/RAM to receive MEMBRA Gas Credits\n";
+    std::cout << "Gas Credits make MEMBRA intents sender-gasless\n";
+    std::cout << "Real Solana fees require funded GasVault or relayer\n";
+    std::cout << "Mainnet disabled by default\n\n";
 
     // Initialize components
     ComputeStaking compute_staking;
@@ -41,25 +41,26 @@ int main() {
     std::cout << "Staked compute: " << compute_staking.total_cpu_cores() << " cores\n";
     std::cout << "GasVault healthy: " << (gas_vault.is_healthy() ? "yes" : "no") << "\n\n";
 
-    // Alice stakes CPU/RAM to send transactions for free
-    std::cout << "=== Step 1: Alice stakes CPU/RAM for free transactions ===\n";
-    uint64_t alice_compute_credits = 0;
-    std::string stake_id = compute_staking.stake_compute("alice_wallet", 4, 16, 4000, alice_compute_credits);
+    // Alice stakes CPU/RAM to receive MEMBRA Gas Credits
+    std::cout << "=== Step 1: Alice stakes CPU/RAM to receive MEMBRA Gas Credits ===\n";
+    uint64_t alice_credit_grant = 0;
+    std::string stake_id = compute_staking.stake_compute("alice_wallet", 4, 16, 4000, alice_credit_grant);
     std::cout << "Stake ID: " << stake_id << "\n";
     std::cout << "Alice staked: 4 CPU cores, 16 GB RAM, 4000 compute units\n";
-    std::cout << "MEMBRA issues compute credits: " << alice_compute_credits << " credit units (not SOL)\n";
-    std::cout << "Alice's gas allowance for free txs: " << compute_staking.get_gas_allowance("alice_wallet") / 1e9 << " SOL\n";
-    std::cout << "⚠️  Credits redeemable only from funded RewardVault\n";
+    std::cout << "MEMBRA issues: " << alice_credit_grant / 1e9 << " SOL-equivalent MEMBRA Gas Credits\n";
+    std::cout << "Alice's gas credit allowance: " << compute_staking.get_gas_allowance("alice_wallet") / 1e9 << " SOL-equivalent credits\n";
+    std::cout << "⚠️  Gas Credits are NOT real SOL - for MEMBRA fee accounting only\n";
+    std::cout << "⚠️  Real Solana settlement requires funded GasVault or relayer\n";
     std::cout << "Total staked cores: " << compute_staking.total_cpu_cores() << "\n\n";
 
     // Bob also stakes
-    uint64_t bob_compute_credits = 0;
-    std::string bob_stake = compute_staking.stake_compute("bob_wallet", 8, 32, 8000, bob_compute_credits);
+    uint64_t bob_credit_grant = 0;
+    std::string bob_stake = compute_staking.stake_compute("bob_wallet", 8, 32, 8000, bob_credit_grant);
     std::cout << "Bob staked: 8 CPU cores, 32 GB RAM, 8000 compute units\n";
-    std::cout << "MEMBRA issues compute credits: " << bob_compute_credits << " credit units (not SOL)\n";
-    std::cout << "Bob's gas allowance for free txs: " << compute_staking.get_gas_allowance("bob_wallet") / 1e9 << " SOL\n";
+    std::cout << "MEMBRA issues: " << bob_credit_grant / 1e9 << " SOL-equivalent MEMBRA Gas Credits\n";
+    std::cout << "Bob's gas credit allowance: " << compute_staking.get_gas_allowance("bob_wallet") / 1e9 << " SOL-equivalent credits\n";
     std::cout << "Total staked cores: " << compute_staking.total_cpu_cores() << "\n";
-    std::cout << "Total compute credits issued: " << compute_staking.total_compute_credits_issued() << " credit units\n\n";
+    std::cout << "Total credit grants issued: " << compute_staking.total_credit_grants_issued() / 1e9 << " SOL-equivalent credits\n\n";
 
     // Feed price data for volatility detection
     std::cout << "=== Step 2: Volatility Oracle ===\n";
@@ -76,8 +77,8 @@ int main() {
     std::cout << "MEMBRA TWAP: $" << report.membra_twap << "\n";
     std::cout << "Price change: " << report.price_change_pct << "%\n\n";
 
-    // Create gasless payment intent (Alice uses her staked compute)
-    std::cout << "=== Step 3: Alice sends transaction using her staked compute ===\n";
+    // Create gasless payment intent (Alice uses her gas credits)
+    std::cout << "=== Step 3: Alice sends gasless MEMBRA intent ===\n";
     auto intent = intent_network.create_intent(
         "alice_wallet",
         "bob_wallet",
@@ -89,11 +90,11 @@ int main() {
     std::cout << "Intent created successfully\n";
     std::cout << "Intent ID: " << intent.intent_id << "\n";
     std::cout << "Amount: " << intent.amount / 1'000'000 << " USDC\n";
-    std::cout << "Alice's gas allowance before: " << compute_staking.get_gas_allowance("alice_wallet") << " lamports\n";
+    std::cout << "Alice's gas credit allowance before: " << compute_staking.get_gas_allowance("alice_wallet") << " credit units\n";
     std::cout << "Claim window: 7 days\n\n";
 
-    // Claim intent (gas paid by Alice's staked compute)
-    std::cout << "=== Step 4: Settlement with Alice's Gas Allowance ===\n";
+    // Claim intent (gas accounted against Alice's gas credits)
+    std::cout << "=== Step 4: Settlement with Gas Credit Accounting ===\n";
     auto claimed = intent_network.claim_intent(intent.intent_id, "relayer");
     if (claimed) {
         uint64_t gas_cost = 5000;  // estimated gas
@@ -101,11 +102,11 @@ int main() {
 
         std::cout << "Intent claimed\n";
         std::cout << "Gas cost: " << gas_cost << " lamports\n";
-        std::cout << "Gas paid by: Alice's staked compute (gas allowance)\n";
-        std::cout << "Alice's gas allowance after: " << compute_staking.get_gas_allowance("alice_wallet") << " lamports\n";
-        std::cout << "GasVault reserves unchanged: " << gas_vault.sol_reserves_sol() << " SOL (not used)\n";
-        std::cout << "Total gas paid: " << gas_vault.total_gas_paid() << " lamports\n";
-        std::cout << "Gas paid by staked compute: " << gas_vault.gas_paid_by_compute() << " lamports\n";
+        std::cout << "Gas accounted against: Alice's MEMBRA Gas Credits\n";
+        std::cout << "Alice's gas credit allowance after: " << compute_staking.get_gas_allowance("alice_wallet") << " credit units\n";
+        std::cout << "GasVault reserves: " << gas_vault.sol_reserves_sol() << " SOL\n";
+        std::cout << "Total gas accounted: " << gas_vault.total_gas_paid() << " lamports\n";
+        std::cout << "Gas accounted against credits: " << gas_vault.gas_paid_by_compute() << " lamports\n";
         std::cout << "Compute coverage ratio: " << (gas_vault.compute_coverage_ratio() * 100) << "%\n\n";
     } else {
         std::cout << "Failed to claim intent\n\n";
@@ -119,17 +120,17 @@ int main() {
     std::cout << "ProofBook entries: " << proof_book.entry_count() << "\n";
     std::cout << "Chain valid: " << (proof_book.verify_chain() ? "yes" : "no") << "\n\n";
 
-    // Unstake and claim additional rewards
+    // Unstake and claim additional credits
     std::cout << "=== Step 6: Unstake Compute (after 1 hour minimum) ===\n";
     uint64_t additional_credits = 0;
     bool unstaked = compute_staking.unstake_compute(stake_id, additional_credits);
     std::cout << "Unstake result: " << (unstaked ? "success" : "failed (too early)") << "\n";
     if (unstaked) {
         auto stake = compute_staking.get_stake(stake_id);
-        std::cout << "Compute credits (received at stake): " << stake->compute_credits << " credit units\n";
+        std::cout << "Instant credit grant (received at stake): " << stake->instant_credit_grant << " credit units\n";
         std::cout << "Additional time-based credits: " << additional_credits << " credit units\n";
-        std::cout << "Total credits earned: " << stake->total_credits_earned << " credit units\n";
-        std::cout << "⚠️  Credits must be redeemed from funded RewardVault for SOL\n";
+        std::cout << "Total credit grants: " << stake->total_credit_grants_issued << " credit units\n";
+        std::cout << "⚠️  Credits are MEMBRA internal accounting, not redeemable for SOL\n";
     }
     std::cout << "Remaining staked cores: " << compute_staking.total_cpu_cores() << "\n\n";
 
@@ -239,8 +240,8 @@ int main() {
     std::cout << "Reward claimed: " << (reward_claimed ? "yes" : "no") << "\n";
     std::cout << "Pool balance after claim: " << reward_vault.pool_balance() / 1e9 << " SOL\n\n";
     
-    // Receiver-Paid Gas (Simulation)
-    std::cout << "--- Receiver-Paid Gas (Simulation) ---\n";
+    // Receiver-Paid Gas (devnet only)
+    std::cout << "--- Receiver-Paid Gas (devnet only) ---\n";
     receiver_gas.update_oracle(5000, 1000, 150.0, 0.10);
     std::cout << "Gas oracle updated\n";
     std::string gas_receipt = receiver_gas.create_receipt(
@@ -254,25 +255,26 @@ int main() {
     );
     std::cout << "Created gas receipt: " << gas_receipt << "\n";
     std::cout << "Compensation enabled: " << (receiver_gas.get_oracle_state().is_stale() ? "no (stale)" : "yes") << "\n";
-    std::cout << "⚠️  Compensation is simulation only, devnet\n\n";
+    std::cout << "⚠️  Receiver-paid gas is devnet only\n\n";
 
     std::cout << "=== Final Summary ===\n";
-    std::cout << "Gas model: Users stake CPU/RAM to send transactions for free\n";
-    std::cout << "Alice staked 4 cores + 16 GB RAM → got 40 compute credits + 40 SOL gas allowance\n";
-    std::cout << "Alice sent transaction for free using her gas allowance\n";
-    std::cout << "Alice's remaining gas allowance: " << compute_staking.get_gas_allowance("alice_wallet") << " lamports\n";
-    std::cout << "Sender paid: 0 SOL (used gas allowance from staked compute)\n";
+    std::cout << "Gas model: Users lock CPU/RAM to receive MEMBRA Gas Credits\n";
+    std::cout << "Alice staked 4 cores + 16 GB RAM → received 40 SOL-equivalent MEMBRA Gas Credits\n";
+    std::cout << "Alice sent gasless MEMBRA intent using gas credits\n";
+    std::cout << "Alice's remaining gas credit allowance: " << compute_staking.get_gas_allowance("alice_wallet") << " credit units\n";
+    std::cout << "Sender paid: 0 SOL (gas accounted against MEMBRA credits)\n";
     std::cout << "Receiver paid: 0 SOL\n";
-    std::cout << "GasVault reserves unchanged: " << gas_vault.sol_reserves_sol() << " SOL (not used)\n";
+    std::cout << "GasVault reserves: " << gas_vault.sol_reserves_sol() << " SOL\n";
     std::cout << "Total staked compute cores: " << compute_staking.total_cpu_cores() << "\n";
-    std::cout << "Total compute credits issued: " << compute_staking.total_compute_credits_issued() << " credit units\n";
+    std::cout << "Total credit grants issued: " << compute_staking.total_credit_grants_issued() / 1e9 << " SOL-equivalent credits\n";
     std::cout << "Compute futures market: " << futures_market.open_futures_count() << " open positions\n";
     std::cout << "Compute index: " << compute_oracle.current_index() << "\n";
     std::cout << "M5 benchmark: " << bench_result.inference_ops_per_sec << " ops/sec\n";
     std::cout << "Proof-of-inference receipts: " << proof_of_inference.receipt_count() << "\n";
     std::cout << "Reward vault pool: " << reward_vault.pool_balance() / 1e9 << " SOL\n";
-    std::cout << "⚠️  Compute credits are NOT SOL. Credits redeemable only from funded vault.\n";
-    std::cout << "⚠️  Earnings require paid API demand or treasury funding.\n";
+    std::cout << "⚠️  MEMBRA Gas Credits are NOT real SOL\n";
+    std::cout << "⚠️  Real Solana settlement requires funded GasVault, relayer, or receiver-paid model\n";
+    std::cout << "⚠️  Mainnet disabled by default\n";
     std::cout << "ProofBook integrity: " << (proof_book.verify_chain() ? "valid" : "invalid") << "\n";
 
     return 0;

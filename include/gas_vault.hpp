@@ -47,7 +47,7 @@ public:
         return sol_reserves_.load() >= gas_lamports;
     }
 
-    // Protocol pays gas using user's staked compute allowance first, then reserves
+    // Protocol pays gas using user's gas credit allowance first, then funded reserves
     bool pay_gas(const std::string& user_address, uint64_t gas_lamports) {
         // Rate limiting check
         std::lock_guard<std::mutex> lock(mutex_);
@@ -55,10 +55,10 @@ public:
             return false;
         }
 
-        // Priority: use user's gas allowance from their staked compute
+        // Priority: use user's gas credit allowance from their staked compute
         if (compute_staking_) {
             if (compute_staking_->consume_gas_allowance(user_address, gas_lamports)) {
-                // User's gas allowance covers this transaction
+                // User's gas credit allowance covers this transaction
                 gas_paid_by_compute_ += gas_lamports;
                 total_gas_paid_ += gas_lamports;
                 user_tx_counts_[user_address]++;
@@ -66,9 +66,9 @@ public:
             }
         }
 
-        // Fallback to protocol reserves
+        // Fallback to protocol reserves (must be funded)
         if (sol_reserves_ < gas_lamports) {
-            return false;
+            return false;  // Settlement fails if vault not funded
         }
         sol_reserves_ -= gas_lamports;
         total_gas_paid_ += gas_lamports;

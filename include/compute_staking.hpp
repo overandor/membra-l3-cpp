@@ -18,9 +18,9 @@ struct ComputeStake {
     double unstaked_at;          // 0 if still staked
     bool active;                 // true if staked
     double reward_rate;          // reward credits per second per unit
-    uint64_t compute_credits;   // compute reward credits (not SOL)
-    uint64_t total_credits_earned;  // total credits earned
-    uint64_t gas_allowance;     // remaining gas allowance for free txs
+    uint64_t instant_credit_grant;  // instant MEMBRA gas credit grant (not SOL)
+    uint64_t total_credit_grants_issued;  // total credit grants
+    uint64_t gas_credit_allowance;  // remaining MEMBRA gas credit allowance (not SOL)
     bool redeemable;            // true if credits can be redeemed from funded vault
 };
 
@@ -30,26 +30,26 @@ private:
     std::mutex mutex_;
     std::atomic<uint64_t> total_staked_compute_;
     std::atomic<uint64_t> total_cpu_cores_;
-    std::atomic<uint64_t> total_compute_credits_issued_;
+    std::atomic<uint64_t> total_credit_grants_issued_;
 
     // Configuration
     static constexpr double GAS_CREDITS_PER_CORE_PER_SEC = 1000.0;  // 1000 lamports/sec/core
     static constexpr double MIN_STAKE_DURATION_SEC = 3600.0;  // 1 hour minimum
     static constexpr double REWARD_MULTIPLIER = 1.5;  // bonus for longer stakes
-    static constexpr uint64_t CREDITS_PER_CORE = 10000000000;  // 10 credit units per core (not SOL)
-    static constexpr uint64_t GAS_ALLOWANCE_PER_CORE = 10000000000;  // 10 SOL gas allowance per core
+    static constexpr uint64_t CREDIT_GRANT_PER_CORE = 10000000000;  // 10 SOL-equivalent gas credit units per core
+    static constexpr uint64_t GAS_CREDIT_ALLOWANCE_PER_CORE = 10000000000;  // 10 SOL-equivalent gas credit allowance per core
 
 public:
     ComputeStaking()
-        : total_staked_compute_(0), total_cpu_cores_(0), total_compute_credits_issued_(0) {}
+        : total_staked_compute_(0), total_cpu_cores_(0), total_credit_grants_issued_(0) {}
 
-    // Stake CPU/RAM resources - MEMBRA issues compute credits (not SOL) and gives gas allowance
+    // Stake CPU/RAM resources - MEMBRA issues MEMBRA gas credits (not SOL)
     std::string stake_compute(
         const std::string& staker_address,
         uint64_t cpu_cores,
         uint64_t ram_gb,
         uint64_t compute_units,
-        uint64_t& compute_credits
+        uint64_t& credit_grant
     ) {
         std::lock_guard<std::mutex> lock(mutex_);
 
@@ -57,12 +57,12 @@ public:
                               std::to_string(std::chrono::duration<double>(
                                   std::chrono::system_clock::now().time_since_epoch()).count());
 
-        // Issue compute credits (not SOL)
-        compute_credits = cpu_cores * CREDITS_PER_CORE;
-        total_compute_credits_issued_ += compute_credits;
+        // Issue MEMBRA gas credit grant (not SOL)
+        credit_grant = cpu_cores * CREDIT_GRANT_PER_CORE;
+        total_credit_grants_issued_ += credit_grant;
 
-        // Calculate gas allowance for free txs
-        uint64_t gas_allowance = cpu_cores * GAS_ALLOWANCE_PER_CORE;
+        // Calculate gas credit allowance for free txs (not SOL)
+        uint64_t gas_credit_allowance = cpu_cores * GAS_CREDIT_ALLOWANCE_PER_CORE;
 
         ComputeStake stake;
         stake.stake_id = stake_id;
@@ -74,9 +74,9 @@ public:
         stake.unstaked_at = 0;
         stake.active = true;
         stake.reward_rate = GAS_CREDITS_PER_CORE_PER_SEC * REWARD_MULTIPLIER;
-        stake.compute_credits = compute_credits;
-        stake.total_credits_earned = compute_credits;
-        stake.gas_allowance = gas_allowance;
+        stake.instant_credit_grant = credit_grant;
+        stake.total_credit_grants_issued = credit_grant;
+        stake.gas_credit_allowance = gas_credit_allowance;
         stake.redeemable = false;  // Not redeemable until vault funded
 
         stakes_[stake_id] = std::move(stake);
@@ -103,9 +103,9 @@ public:
             return false;  // too early to unstake
         }
 
-        // Calculate additional earned compute credits (time-based)
+        // Calculate additional earned MEMBRA gas credits (time-based)
         additional_credits = calculate_time_rewards(stake, duration);
-        stake.total_credits_earned += additional_credits;
+        stake.total_credit_grants_issued += additional_credits;
 
         stake.active = false;
         stake.unstaked_at = current_timestamp();
@@ -125,7 +125,7 @@ public:
     // Get total staked compute
     uint64_t total_staked_compute() const { return total_staked_compute_.load(); }
     uint64_t total_cpu_cores() const { return total_cpu_cores_.load(); }
-    uint64_t total_compute_credits_issued() const { return total_compute_credits_issued_.load(); }
+    uint64_t total_credit_grants_issued() const { return total_credit_grants_issued_.load(); }
 
     // Get stake info
     ComputeStake* get_stake(const std::string& stake_id) {
@@ -146,7 +146,7 @@ public:
         return result;
     }
 
-    // Consume gas allowance for free transaction
+    // Consume gas credit allowance for free transaction
     bool consume_gas_allowance(const std::string& staker_address, uint64_t gas_cost) {
         std::lock_guard<std::mutex> lock(mutex_);
 
@@ -154,8 +154,8 @@ public:
         for (auto& pair : stakes_) {
             ComputeStake& stake = pair.second;
             if (stake.staker_address == staker_address && stake.active) {
-                if (stake.gas_allowance >= gas_cost) {
-                    stake.gas_allowance -= gas_cost;
+                if (stake.gas_credit_allowance >= gas_cost) {
+                    stake.gas_credit_allowance -= gas_cost;
                     return true;
                 }
             }
@@ -163,14 +163,14 @@ public:
         return false;
     }
 
-    // Get remaining gas allowance for a staker
+    // Get remaining gas credit allowance for a staker
     uint64_t get_gas_allowance(const std::string& staker_address) {
         std::lock_guard<std::mutex> lock(mutex_);
 
         for (const auto& pair : stakes_) {
             const ComputeStake& stake = pair.second;
             if (stake.staker_address == staker_address && stake.active) {
-                return stake.gas_allowance;
+                return stake.gas_credit_allowance;
             }
         }
         return 0;
