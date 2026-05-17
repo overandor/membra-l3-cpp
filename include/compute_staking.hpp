@@ -17,6 +17,8 @@ struct ComputeStake {
     double unstaked_at;          // 0 if still staked
     bool active;                 // true if staked
     double reward_rate;          // gas credits per second per unit
+    uint64_t instant_reward;     // instant payment when staking
+    uint64_t total_earned;      // total rewards earned
 };
 
 class ComputeStaking {
@@ -25,27 +27,34 @@ private:
     std::mutex mutex_;
     std::atomic<uint64_t> total_staked_compute_;
     std::atomic<uint64_t> total_cpu_cores_;
+    std::atomic<uint64_t> total_instant_rewards_paid_;
 
     // Configuration
     static constexpr double GAS_CREDITS_PER_CORE_PER_SEC = 1000.0;  // 1000 lamports/sec/core
     static constexpr double MIN_STAKE_DURATION_SEC = 3600.0;  // 1 hour minimum
     static constexpr double REWARD_MULTIPLIER = 1.5;  // bonus for longer stakes
+    static constexpr uint64_t INSTANT_REWARD_PER_CORE = 10000000000;  // 10 SOL per core upfront
 
 public:
     ComputeStaking()
-        : total_staked_compute_(0), total_cpu_cores_(0) {}
+        : total_staked_compute_(0), total_cpu_cores_(0), total_instant_rewards_paid_(0) {}
 
-    // Stake CPU/compute resources to earn gas credits
+    // Stake CPU/compute resources - MEMBRA pays instantly when locking compute
     std::string stake_compute(
         const std::string& staker_address,
         uint64_t cpu_cores,
-        uint64_t compute_units
+        uint64_t compute_units,
+        uint64_t& instant_reward
     ) {
         std::lock_guard<std::mutex> lock(mutex_);
 
         std::string stake_id = "stake_" + staker_address + "_" +
                               std::to_string(std::chrono::duration<double>(
                                   std::chrono::system_clock::now().time_since_epoch()).count());
+
+        // Calculate instant reward
+        instant_reward = cpu_cores * INSTANT_REWARD_PER_CORE;
+        total_instant_rewards_paid_ += instant_reward;
 
         ComputeStake stake;
         stake.stake_id = stake_id;
@@ -56,6 +65,8 @@ public:
         stake.unstaked_at = 0;
         stake.active = true;
         stake.reward_rate = GAS_CREDITS_PER_CORE_PER_SEC * REWARD_MULTIPLIER;
+        stake.instant_reward = instant_reward;
+        stake.total_earned = instant_reward;
 
         stakes_[stake_id] = std::move(stake);
 
@@ -66,7 +77,7 @@ public:
     }
 
     // Unstake and claim accumulated gas credits
-    bool unstake_compute(const std::string& stake_id, uint64_t& gas_credits_earned) {
+    bool unstake_compute(const std::string& stake_id, uint64_t& additional_rewards) {
         std::lock_guard<std::mutex> lock(mutex_);
 
         auto it = stakes_.find(stake_id);
@@ -81,8 +92,9 @@ public:
             return false;  // too early to unstake
         }
 
-        // Calculate earned gas credits
-        gas_credits_earned = calculate_rewards(stake, duration);
+        // Calculate additional earned gas credits (time-based)
+        additional_rewards = calculate_time_rewards(stake, duration);
+        stake.total_earned += additional_rewards;
 
         stake.active = false;
         stake.unstaked_at = current_timestamp();
@@ -102,6 +114,7 @@ public:
     // Get total staked compute
     uint64_t total_staked_compute() const { return total_staked_compute_.load(); }
     uint64_t total_cpu_cores() const { return total_cpu_cores_.load(); }
+    uint64_t total_instant_rewards_paid() const { return total_instant_rewards_paid_.load(); }
 
     // Get stake info
     ComputeStake* get_stake(const std::string& stake_id) {
@@ -123,8 +136,8 @@ public:
     }
 
 private:
-    static uint64_t calculate_rewards(const ComputeStake& stake, double duration) {
-        // Rewards = compute_units * reward_rate * duration
+    static uint64_t calculate_time_rewards(const ComputeStake& stake, double duration) {
+        // Time-based rewards = compute_units * reward_rate * duration
         double reward = stake.compute_units * stake.reward_rate * duration;
         return static_cast<uint64_t>(reward);
     }
