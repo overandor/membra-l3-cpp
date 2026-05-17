@@ -5,6 +5,10 @@
 #include "volatility_oracle.hpp"
 #include "compute_staking.hpp"
 #include "compute_futures.hpp"
+#include "compute_benchmark.hpp"
+#include "proof_of_inference.hpp"
+#include "reward_vault.hpp"
+#include "receiver_paid_gas.hpp"
 
 #include <iostream>
 #include <thread>
@@ -23,6 +27,10 @@ int main() {
     ComputeStaking compute_staking;
     ComputePriceOracle compute_oracle;
     ComputeFuturesMarket futures_market(&compute_oracle);
+    ComputeBenchmark benchmark;
+    ProofOfInference proof_of_inference;
+    RewardVault reward_vault(100'000'000'000);  // 100 SOL initial pool
+    ReceiverPaidGas receiver_gas;
     GasVault gas_vault(100'000'000'000, &compute_staking);  // 100 SOL + compute staking
     IntentNetwork intent_network;
     VolatilityOracle oracle;
@@ -178,6 +186,73 @@ int main() {
     auto liquidated = futures_market.check_liquidations();
     std::cout << "Liquidated positions: " << liquidated.size() << "\n\n";
 
+    // === Step 8: Phase-Two Infrastructure (Development) ===
+    std::cout << "=== Step 8: Phase-Two Infrastructure ===\n";
+    
+    // M5 Benchmark
+    std::cout << "--- M5 Benchmark ---\n";
+    auto bench_result = benchmark.run_benchmark("M5_MacBook_Pro");
+    std::cout << "Hardware: " << bench_result.hardware_type << "\n";
+    std::cout << "CPU: " << bench_result.cpu_cores << " cores @ " << bench_result.cpu_frequency_ghz << " GHz\n";
+    std::cout << "RAM: " << bench_result.ram_gb << " GB @ " << bench_result.memory_bandwidth_gbps << " GB/s\n";
+    std::cout << "SHA256 hashes/sec: " << bench_result.sha256_hashes_per_sec << "\n";
+    std::cout << "Inference ops/sec: " << bench_result.inference_ops_per_sec << "\n";
+    double m5_ratio = benchmark.compare_to_m5(bench_result);
+    std::cout << "Performance vs M5 baseline: " << (m5_ratio * 100) << "%\n";
+    double daily_earnings = benchmark.estimate_daily_sol_earnings(bench_result);
+    std::cout << "Estimated daily earnings (conservative): $" << daily_earnings << " SOL\n";
+    std::cout << "⚠️  Actual earnings depend on network demand\n\n";
+    
+    // Proof-of-Inference
+    std::cout << "--- Proof-of-Inference ---\n";
+    std::string receipt_id = proof_of_inference.create_receipt(
+        "worker_wallet",
+        "task_123",
+        InferenceType::PROOF_GENERATION,
+        123456789,
+        987654321,
+        10000,
+        5000000,
+        1024000,
+        0.5
+    );
+    std::cout << "Created inference receipt: " << receipt_id << "\n";
+    bool verified = proof_of_inference.verify_receipt(receipt_id);
+    std::cout << "Receipt verified: " << (verified ? "yes" : "no") << "\n";
+    std::cout << "Total compute units: " << proof_of_inference.total_compute_units() << "\n\n";
+    
+    // Reward Vault
+    std::cout << "--- Reward Vault ---\n";
+    std::string reward_entry = reward_vault.create_reward_entry(
+        "worker_wallet",
+        receipt_id,
+        50000000,  // 0.05 SOL
+        "inference"
+    );
+    std::cout << "Created reward entry: " << reward_entry << "\n";
+    std::cout << "Pool balance: " << reward_vault.pool_balance() / 1e9 << " SOL\n";
+    std::cout << "Total rewards claimed: " << reward_vault.total_rewards_claimed() / 1e9 << " SOL\n";
+    bool reward_claimed = reward_vault.claim_reward(reward_entry);
+    std::cout << "Reward claimed: " << (reward_claimed ? "yes" : "no") << "\n";
+    std::cout << "Pool balance after claim: " << reward_vault.pool_balance() / 1e9 << " SOL\n\n";
+    
+    // Receiver-Paid Gas (Simulation)
+    std::cout << "--- Receiver-Paid Gas (Simulation) ---\n";
+    receiver_gas.update_oracle(5000, 1000, 150.0, 0.10);
+    std::cout << "Gas oracle updated\n";
+    std::string gas_receipt = receiver_gas.create_receipt(
+        "tx_456",
+        "receiver_wallet",
+        "sender_wallet",
+        5000,    // gas paid
+        1000,    // priority fee
+        12345,
+        "signature_xyz"
+    );
+    std::cout << "Created gas receipt: " << gas_receipt << "\n";
+    std::cout << "Compensation enabled: " << (receiver_gas.get_oracle_state().is_stale() ? "no (stale)" : "yes") << "\n";
+    std::cout << "⚠️  Compensation is simulation only, devnet\n\n";
+
     std::cout << "=== Final Summary ===\n";
     std::cout << "Gas model: Users stake CPU/RAM to send transactions for free\n";
     std::cout << "Alice staked 4 cores + 16 GB RAM → got 40 SOL instantly + 40 SOL gas allowance\n";
@@ -190,6 +265,10 @@ int main() {
     std::cout << "Instant rewards paid to stakers: " << compute_staking.total_instant_rewards_paid() / 1e9 << " SOL\n";
     std::cout << "Compute futures market: " << futures_market.open_futures_count() << " open positions\n";
     std::cout << "Compute index: " << compute_oracle.current_index() << "\n";
+    std::cout << "M5 benchmark: " << bench_result.inference_ops_per_sec << " ops/sec\n";
+    std::cout << "Proof-of-inference receipts: " << proof_of_inference.receipt_count() << "\n";
+    std::cout << "Reward vault pool: " << reward_vault.pool_balance() / 1e9 << " SOL\n";
+    std::cout << "⚠️  Earnings depend on network demand, not guaranteed\n";
     std::cout << "ProofBook integrity: " << (proof_book.verify_chain() ? "valid" : "invalid") << "\n";
 
     return 0;
