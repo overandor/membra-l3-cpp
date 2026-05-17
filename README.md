@@ -1,27 +1,41 @@
 # MEMBRA Layer-3 C++ Implementation
 
-High-performance C++ implementation of MEMBRA L3 protocol with protocol-subsidized gas model.
+High-performance C++ implementation of MEMBRA L3 protocol with **compute-collateralized gas model**.
 
-## Key Feature: Protocol-Subsidized Gas
+## Key Feature: Compute-Collateralized Gas
 
-**Neither sender nor receiver pays gas fees.** The protocol pays all gas from its own reserves.
+**Neither sender nor receiver pays gas fees.** Gas is subsidized by staked CPU/compute resources.
 
 - Sender pays: 0 SOL
 - Receiver pays: 0 SOL
-- Protocol pays: All gas fees
+- Gas paid by: Staked CPU/compute resources
+- Reserves: Backup only (used when no staked compute)
 
-This is economically unsustainable long-term (protocol drains reserves), but demonstrates the requested model.
+## How It Works
+
+1. Users stake CPU cores/compute units
+2. Staked compute earns gas credits continuously
+3. Gas fees are paid from staked compute first
+4. Protocol reserves are only used as backup
+5. Stakers can unstake after minimum duration and claim rewards
 
 ## Architecture
 
 - **ProofBook**: Immutable hash-chained proof log (ring-buffer optimized)
-- **GasVault**: Protocol reserves, pays all gas, no user reimbursement
+- **ComputeStaking**: CPU/compute staking with rewards
+- **GasVault**: Uses staked compute for gas, reserves as backup
 - **IntentNetwork**: Gasless payment intents (7-day claim window)
 - **VolatilityOracle**: High-performance TWAP with ring buffers
 - **C++17**: Modern features, thread-safe, minimal allocations
 
 ## Build
 
+```bash
+g++ -std=c++17 -O3 -I./include -o membra_l3 src/main.cpp -lcrypto -lpthread
+./membra_l3
+```
+
+Or with CMake:
 ```bash
 mkdir build && cd build
 cmake ..
@@ -43,11 +57,16 @@ make
 - Cache-friendly data structures
 - `-O3 -march=native` compilation flags
 
-## Important Note
+## Economic Model
 
-This implementation assumes the protocol has unlimited SOL reserves to subsidize all gas. In production:
-- Protocol would eventually drain reserves
-- Would need continuous SOL injection
-- Economically unsustainable without external funding
+This is sustainable long-term because:
+- Gas is subsidized by real compute resource staking
+- Protocol reserves are only backup
+- Stakers earn rewards for providing compute collateral
+- No unlimited money creation - compute is a real resource
 
-The Python version uses a more sustainable model (fee credits + relayer reimbursement).
+## Comparison to Python Version
+
+- Python: Fee credits + relayer reimbursement (ZK compute)
+- C++: Direct CPU/compute staking (no ZK required)
+- Both: Neither sender nor receiver pays gas

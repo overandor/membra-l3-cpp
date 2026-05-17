@@ -60,9 +60,9 @@ private:
     static constexpr double CLAIM_WINDOW_SECONDS = 604800.0;
 
 public:
-    IntentNetwork() : intent_counter_(0) {}
+    IntentNetwork() : intent_counter_(1) {}
 
-    PaymentIntent* create_intent(
+    PaymentIntent create_intent(
         const std::string& sender,
         const std::string& receiver,
         const std::string& token,
@@ -87,8 +87,8 @@ public:
         intent.sender_signature = signature;
         intent.status = IntentStatus::PENDING;
 
-        intents_[intent.intent_id] = std::move(intent);
-        return &intents_[intent.intent_id];
+        intents_[intent.intent_id] = intent;
+        return intent;
     }
 
     PaymentIntent* claim_intent(const std::string& intent_id, const std::string& claimer) {
@@ -151,7 +151,8 @@ public:
 
 private:
     std::string generate_intent_id() {
-        return "int_" + std::to_string(intent_counter_++);
+        uint64_t id = intent_counter_.fetch_add(1);
+        return "int_" + std::to_string(id);
     }
 };
 

@@ -3,6 +3,7 @@
 #include "gas_vault.hpp"
 #include "intent_network.hpp"
 #include "volatility_oracle.hpp"
+#include "compute_staking.hpp"
 
 #include <iostream>
 #include <thread>
@@ -12,18 +13,35 @@ using namespace membra;
 
 int main() {
     std::cout << "MEMBRA Layer-3 C++ Implementation\n";
-    std::cout << "Protocol-Subsidized Gas Model: Neither sender nor receiver pays\n\n";
+    std::cout << "Compute-Collateralized Gas Model: Gas subsidized by staked CPU/compute\n\n";
 
     // Initialize components
-    GasVault gas_vault(100'000'000'000);  // 100 SOL in reserves
+    ComputeStaking compute_staking;
+    GasVault gas_vault(100'000'000'000, &compute_staking);  // 100 SOL + compute staking
     IntentNetwork intent_network;
     VolatilityOracle oracle;
     ProofBook proof_book;
 
-    std::cout << "GasVault reserves: " << gas_vault.sol_reserves_sol() << " SOL\n";
+    std::cout << "GasVault reserves: " << gas_vault.sol_reserves_sol() << " SOL (backup)\n";
+    std::cout << "Staked compute: " << compute_staking.total_cpu_cores() << " cores\n";
     std::cout << "GasVault healthy: " << (gas_vault.is_healthy() ? "yes" : "no") << "\n\n";
 
+    // Alice stakes CPU/compute to subsidize gas
+    std::cout << "=== Step 1: Alice stakes CPU/compute ===\n";
+    std::string stake_id = compute_staking.stake_compute("alice_wallet", 4, 4000);
+    std::cout << "Stake ID: " << stake_id << "\n";
+    std::cout << "Alice staked: 4 CPU cores, 4000 compute units\n";
+    std::cout << "Total staked cores: " << compute_staking.total_cpu_cores() << "\n";
+    std::cout << "Gas credit rate: " << compute_staking.current_gas_credit_rate() << " lamports/sec\n\n";
+
+    // Bob also stakes
+    std::string bob_stake = compute_staking.stake_compute("bob_wallet", 8, 8000);
+    std::cout << "Bob staked: 8 CPU cores, 8000 compute units\n";
+    std::cout << "Total staked cores: " << compute_staking.total_cpu_cores() << "\n";
+    std::cout << "Gas credit rate: " << compute_staking.current_gas_credit_rate() << " lamports/sec\n\n";
+
     // Feed price data for volatility detection
+    std::cout << "=== Step 2: Volatility Oracle ===\n";
     std::cout << "Feeding price data...\n";
     for (int i = 0; i < 20; i++) {
         double price = 1.0 * (1 + i * 0.005);  // 10% rise
@@ -31,15 +49,14 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    // Assess volatility
     VolatilityReport report = oracle.assess(gas_vault.sol_reserves_sol());
     std::cout << "Volatility signal: " << static_cast<int>(report.signal) << "\n";
     std::cout << "Confidence: " << report.confidence << "\n";
     std::cout << "MEMBRA TWAP: $" << report.membra_twap << "\n";
     std::cout << "Price change: " << report.price_change_pct << "%\n\n";
 
-    // Create gasless payment intent (sender pays 0, receiver pays 0)
-    std::cout << "Creating gasless payment intent...\n";
+    // Create gasless payment intent
+    std::cout << "=== Step 3: Gasless Payment Intent ===\n";
     auto intent = intent_network.create_intent(
         "alice_wallet",
         "bob_wallet",
@@ -48,41 +65,57 @@ int main() {
         "alice_signature"
     );
 
-    if (intent) {
-        std::cout << "Intent created: " << intent->intent_id << "\n";
-        std::cout << "Amount: " << intent->amount / 1'000'000 << " USDC\n";
-        std::cout << "Claim window: 7 days\n";
-        std::cout << "Sender pays: 0 SOL\n";
-        std::cout << "Receiver pays: 0 SOL\n\n";
-    }
+    std::cout << "Intent created successfully\n";
+    std::cout << "Intent ID: " << intent.intent_id << "\n";
+    std::cout << "Amount: " << intent.amount / 1'000'000 << " USDC\n";
+    std::cout << "Claim window: 7 days\n";
+    std::cout << "Sender pays: 0 SOL (subsidized by staked compute)\n";
+    std::cout << "Receiver pays: 0 SOL (subsidized by staked compute)\n\n";
 
-    // Claim intent (protocol pays gas)
-    std::cout << "Claiming intent (protocol pays gas)...\n";
-    auto claimed = intent_network.claim_intent(intent->intent_id, "relayer");
+    // Claim intent (gas paid by staked compute)
+    std::cout << "=== Step 4: Settlement with Compute-Subsidized Gas ===\n";
+    auto claimed = intent_network.claim_intent(intent.intent_id, "relayer");
     if (claimed) {
         uint64_t gas_cost = 5000;  // estimated gas
         bool paid = gas_vault.pay_gas("alice_wallet", gas_cost);
 
         std::cout << "Intent claimed\n";
         std::cout << "Gas cost: " << gas_cost << " lamports\n";
-        std::cout << "Protocol paid: " << (paid ? "yes" : "no") << "\n";
+        std::cout << "Gas paid by: " << (gas_vault.gas_paid_by_compute() > 0 ? "staked compute" : "reserves") << "\n";
         std::cout << "GasVault reserves after: " << gas_vault.sol_reserves_sol() << " SOL\n";
-        std::cout << "Total gas paid by protocol: " << gas_vault.total_gas_paid() << " lamports\n\n";
+        std::cout << "Total gas paid: " << gas_vault.total_gas_paid() << " lamports\n";
+        std::cout << "Gas paid by compute: " << gas_vault.gas_paid_by_compute() << " lamports\n";
+        std::cout << "Compute coverage ratio: " << (gas_vault.compute_coverage_ratio() * 100) << "%\n\n";
+    } else {
+        std::cout << "Failed to claim intent\n\n";
     }
 
     // Log to ProofBook
-    std::cout << "Logging to ProofBook...\n";
-    proof_book.append(ProofType::GOVERNANCE, R"({"action":"intent_settled","gas_paid":true})");
-    proof_book.append(ProofType::TREASURY, R"({"action":"gas_vault_debit","amount":5000})");
+    std::cout << "=== Step 5: ProofBook Logging ===\n";
+    proof_book.append(ProofType::GOVERNANCE, R"({"action":"intent_settled","gas_source":"staked_compute"})");
+    proof_book.append(ProofType::TREASURY, R"({"action":"compute_stake_subsidized","staked_cores":12})");
 
     std::cout << "ProofBook entries: " << proof_book.entry_count() << "\n";
-    std::cout << "Chain valid: " << (proof_book.verify_chain() ? "yes" : "no") << "\n";
+    std::cout << "Chain valid: " << (proof_book.verify_chain() ? "yes" : "no") << "\n\n";
 
-    std::cout << "\n=== Summary ===\n";
-    std::cout << "Protocol paid all gas fees\n";
+    // Unstake and claim rewards
+    std::cout << "=== Step 6: Unstake Compute (after 1 hour minimum) ===\n";
+    uint64_t credits_earned = 0;
+    bool unstaked = compute_staking.unstake_compute(stake_id, credits_earned);
+    std::cout << "Unstake result: " << (unstaked ? "success" : "failed (too early)") << "\n";
+    if (unstaked) {
+        std::cout << "Gas credits earned: " << credits_earned << " lamports\n";
+    }
+    std::cout << "Remaining staked cores: " << compute_staking.total_cpu_cores() << "\n\n";
+
+    std::cout << "=== Final Summary ===\n";
+    std::cout << "Gas model: Compute-collateralized\n";
     std::cout << "Sender paid: 0 SOL\n";
     std::cout << "Receiver paid: 0 SOL\n";
-    std::cout << "GasVault reserves: " << gas_vault.sol_reserves_sol() << " SOL\n";
+    std::cout << "Gas paid by staked compute: " << gas_vault.gas_paid_by_compute() << " lamports\n";
+    std::cout << "GasVault reserves (backup): " << gas_vault.sol_reserves_sol() << " SOL\n";
+    std::cout << "Staked compute cores: " << compute_staking.total_cpu_cores() << "\n";
+    std::cout << "Compute coverage ratio: " << (gas_vault.compute_coverage_ratio() * 100) << "%\n";
     std::cout << "ProofBook integrity: " << (proof_book.verify_chain() ? "valid" : "invalid") << "\n";
 
     return 0;
