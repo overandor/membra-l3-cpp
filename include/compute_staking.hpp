@@ -17,10 +17,11 @@ struct ComputeStake {
     double staked_at;
     double unstaked_at;          // 0 if still staked
     bool active;                 // true if staked
-    double reward_rate;          // gas credits per second per unit
-    uint64_t instant_reward;     // instant payment when staking
-    uint64_t total_earned;      // total rewards earned
+    double reward_rate;          // reward credits per second per unit
+    uint64_t compute_credits;   // compute reward credits (not SOL)
+    uint64_t total_credits_earned;  // total credits earned
     uint64_t gas_allowance;     // remaining gas allowance for free txs
+    bool redeemable;            // true if credits can be redeemed from funded vault
 };
 
 class ComputeStaking {
@@ -29,26 +30,26 @@ private:
     std::mutex mutex_;
     std::atomic<uint64_t> total_staked_compute_;
     std::atomic<uint64_t> total_cpu_cores_;
-    std::atomic<uint64_t> total_instant_rewards_paid_;
+    std::atomic<uint64_t> total_compute_credits_issued_;
 
     // Configuration
     static constexpr double GAS_CREDITS_PER_CORE_PER_SEC = 1000.0;  // 1000 lamports/sec/core
     static constexpr double MIN_STAKE_DURATION_SEC = 3600.0;  // 1 hour minimum
     static constexpr double REWARD_MULTIPLIER = 1.5;  // bonus for longer stakes
-    static constexpr uint64_t INSTANT_REWARD_PER_CORE = 10000000000;  // 10 SOL per core upfront
+    static constexpr uint64_t CREDITS_PER_CORE = 10000000000;  // 10 credit units per core (not SOL)
     static constexpr uint64_t GAS_ALLOWANCE_PER_CORE = 10000000000;  // 10 SOL gas allowance per core
 
 public:
     ComputeStaking()
-        : total_staked_compute_(0), total_cpu_cores_(0), total_instant_rewards_paid_(0) {}
+        : total_staked_compute_(0), total_cpu_cores_(0), total_compute_credits_issued_(0) {}
 
-    // Stake CPU/RAM resources - MEMBRA pays instantly and gives gas allowance for free txs
+    // Stake CPU/RAM resources - MEMBRA issues compute credits (not SOL) and gives gas allowance
     std::string stake_compute(
         const std::string& staker_address,
         uint64_t cpu_cores,
         uint64_t ram_gb,
         uint64_t compute_units,
-        uint64_t& instant_reward
+        uint64_t& compute_credits
     ) {
         std::lock_guard<std::mutex> lock(mutex_);
 
@@ -56,9 +57,9 @@ public:
                               std::to_string(std::chrono::duration<double>(
                                   std::chrono::system_clock::now().time_since_epoch()).count());
 
-        // Calculate instant reward
-        instant_reward = cpu_cores * INSTANT_REWARD_PER_CORE;
-        total_instant_rewards_paid_ += instant_reward;
+        // Issue compute credits (not SOL)
+        compute_credits = cpu_cores * CREDITS_PER_CORE;
+        total_compute_credits_issued_ += compute_credits;
 
         // Calculate gas allowance for free txs
         uint64_t gas_allowance = cpu_cores * GAS_ALLOWANCE_PER_CORE;
@@ -73,9 +74,10 @@ public:
         stake.unstaked_at = 0;
         stake.active = true;
         stake.reward_rate = GAS_CREDITS_PER_CORE_PER_SEC * REWARD_MULTIPLIER;
-        stake.instant_reward = instant_reward;
-        stake.total_earned = instant_reward;
+        stake.compute_credits = compute_credits;
+        stake.total_credits_earned = compute_credits;
         stake.gas_allowance = gas_allowance;
+        stake.redeemable = false;  // Not redeemable until vault funded
 
         stakes_[stake_id] = std::move(stake);
 
@@ -86,7 +88,7 @@ public:
     }
 
     // Unstake and claim accumulated gas credits
-    bool unstake_compute(const std::string& stake_id, uint64_t& additional_rewards) {
+    bool unstake_compute(const std::string& stake_id, uint64_t& additional_credits) {
         std::lock_guard<std::mutex> lock(mutex_);
 
         auto it = stakes_.find(stake_id);
@@ -101,9 +103,9 @@ public:
             return false;  // too early to unstake
         }
 
-        // Calculate additional earned gas credits (time-based)
-        additional_rewards = calculate_time_rewards(stake, duration);
-        stake.total_earned += additional_rewards;
+        // Calculate additional earned compute credits (time-based)
+        additional_credits = calculate_time_rewards(stake, duration);
+        stake.total_credits_earned += additional_credits;
 
         stake.active = false;
         stake.unstaked_at = current_timestamp();
@@ -123,7 +125,7 @@ public:
     // Get total staked compute
     uint64_t total_staked_compute() const { return total_staked_compute_.load(); }
     uint64_t total_cpu_cores() const { return total_cpu_cores_.load(); }
-    uint64_t total_instant_rewards_paid() const { return total_instant_rewards_paid_.load(); }
+    uint64_t total_compute_credits_issued() const { return total_compute_credits_issued_.load(); }
 
     // Get stake info
     ComputeStake* get_stake(const std::string& stake_id) {

@@ -1,31 +1,32 @@
 # MEMBRA Layer-3 C++ Implementation
 
-High-performance C++ implementation of MEMBRA L3 protocol with **compute-collateralized gas model with instant rewards and futures market**.
+High-performance C++ implementation of MEMBRA L3 protocol with **compute-collateralized gas model with compute credits and futures market**.
 
-## ⚠️ IMPORTANT DISCLAIMER
+## ⚠️ CRITICAL DISCLAIMER
 
-**COMPUTE EARNINGS ARE NOT GUARANTEED**
+**COMPUTE CREDITS ARE NOT SOL. COMPUTE DOES NOT CREATE MONEY.**
 
-- Compute staking rewards are funded by protocol reserves or paid usage pools only
-- Earnings depend on actual demand for compute resources
-- No guaranteed minimum earnings - market conditions vary
-- This is a simulation for development and testing
+- Compute staking issues **compute credits**, not SOL
+- Credits are redeemable **only from a funded RewardVault**
+- Rewards require **paid API usage, treasury funding, or external demand**
 - **DO NOT** expect guaranteed passive income from staking compute
 - Hardware depreciation and electricity costs may exceed earnings
-- Mainnet deployment requires additional security audits and governance approval
+- This is a **simulation/prototype** for development and testing
+- **Mainnet is disabled** by default
+- Audit required before any production deployment
 
 ## Key Features
 
 ### 1. Stake CPU/RAM to Send Transactions for Free
 
-**Users stake their own CPU and RAM to send transactions for free.** MEMBRA pays stakers instantly when they lock compute.
+**Users stake their own CPU and RAM to send transactions for free.** MEMBRA issues compute credits when compute is locked.
 
-- User stakes CPU/RAM → Gets instant SOL payment + gas allowance
+- User stakes CPU/RAM → Gets compute credits + gas allowance
 - User sends transactions for free using gas allowance
 - Sender pays: 0 SOL (uses gas allowance from staked compute)
 - Receiver pays: 0 SOL
 - Reserves: Backup only (used when gas allowance exhausted)
-- **Instant rewards are paid from funded pools only**
+- **Compute credits are NOT SOL - redeemable only from funded vault**
 
 ### 2. Compute Futures Market
 
@@ -42,7 +43,7 @@ High-performance C++ implementation of MEMBRA L3 protocol with **compute-collate
 
 - **M5 Benchmarks**: Performance profiling for Apple Silicon
 - **Proof-of-Inference**: Receipts for compute work verification
-- **Reward Vault**: Accounting with strict caps and limits
+- **Reward Vault**: Accounting with strict caps and funding checks
 - **Receiver-Paid Gas**: Gas compensation simulation (devnet only)
 - **Token Compensation Caps**: Prevent unlimited token minting
 
@@ -50,12 +51,13 @@ High-performance C++ implementation of MEMBRA L3 protocol with **compute-collate
 
 ### Staking Flow
 1. **User stakes CPU cores + RAM** (e.g., 4 cores + 16 GB RAM)
-2. **MEMBRA pays instantly** (10 SOL per core) → User gets 40 SOL
+2. **MEMBRA issues compute credits** (10 credit units per core) → User gets 40 credit units
 3. **User gets gas allowance** (10 SOL per core) → 40 SOL for free transactions
 4. **User sends transactions for free** using gas allowance
 5. Gas allowance decreases with each transaction
 6. When exhausted, user can stake more or wait for time-based rewards
-7. After 1 hour minimum, user can unstake and claim additional time-based rewards
+7. After 1 hour minimum, user can unstake and claim additional time-based credits
+8. **Credits can be redeemed for SOL only if RewardVault is funded** (by API usage, treasury, or external demand)
 
 ### Futures Flow
 1. **Compute Price Oracle** tracks CPU and RAM prices in real-time
@@ -111,21 +113,39 @@ make
 
 This model can be sustainable long-term only if:
 - Users stake real compute resources (CPU/RAM) to get free gas
-- MEMBRA pays instant incentive from **funded pools only** (not money creation)
+- MEMBRA issues compute credits from **funded RewardVault only** (not money creation)
 - Gas allowance is tied to amount staked (10 SOL gas allowance per core)
 - Protocol reserves only used as backup
 - Futures market provides price discovery and hedging
 - No unlimited money creation - compute is a real resource
+- **Rewards require paid API usage, treasury funding, or external demand**
 
 ### ⚠️ Earnings Reality Check
 
 For an M5 MacBook Pro ($3000):
-- Staking 12 cores might earn ~$10-50/month in ideal conditions
-- This depends on actual compute demand from the network
+- Staking 12 cores might earn **compute credits**, not SOL
+- Credits are redeemable **only if RewardVault is funded**
+- To earn $10 worth of SOL, the network must have **at least $10 of funded rewards or paid inference demand**
 - Hardware depreciation (~$300-500/year) may exceed earnings
 - Electricity costs ($20-50/month depending on usage) may exceed earnings
 - **DO NOT** stake compute expecting guaranteed passive income
 - Consider this as a way to subsidize your own gas usage, not as income
+
+### Correct Model
+
+```
+M5 compute locked
+↓
+benchmark + proof receipt
+↓
+compute credits issued (NOT SOL)
+↓
+user/API demand funds RewardVault
+↓
+credits become redeemable
+↓
+RewardVault pays SOL only if funded
+```
 
 ### Compensation Caps
 

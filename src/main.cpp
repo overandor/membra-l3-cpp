@@ -18,9 +18,10 @@ using namespace membra;
 
 int main() {
     std::cout << "MEMBRA Layer-3 C++ Implementation\n";
-    std::cout << "Compute-Collateralized Gas Model with Instant Rewards\n";
+    std::cout << "Compute-Collateralized Gas Model with Compute Credits\n";
     std::cout << "Users stake CPU/RAM to send transactions for free\n";
-    std::cout << "MEMBRA pays stakers instantly when they lock compute\n";
+    std::cout << "MEMBRA issues compute credits (not SOL) when compute is locked\n";
+    std::cout << "Credits are redeemable only from funded RewardVault\n";
     std::cout << "Compute Futures Market: Trade futures on CPU/RAM prices\n\n";
 
     // Initialize components
@@ -42,22 +43,23 @@ int main() {
 
     // Alice stakes CPU/RAM to send transactions for free
     std::cout << "=== Step 1: Alice stakes CPU/RAM for free transactions ===\n";
-    uint64_t alice_instant_reward = 0;
-    std::string stake_id = compute_staking.stake_compute("alice_wallet", 4, 16, 4000, alice_instant_reward);
+    uint64_t alice_compute_credits = 0;
+    std::string stake_id = compute_staking.stake_compute("alice_wallet", 4, 16, 4000, alice_compute_credits);
     std::cout << "Stake ID: " << stake_id << "\n";
     std::cout << "Alice staked: 4 CPU cores, 16 GB RAM, 4000 compute units\n";
-    std::cout << "MEMBRA pays instantly: " << alice_instant_reward / 1e9 << " SOL\n";
+    std::cout << "MEMBRA issues compute credits: " << alice_compute_credits << " credit units (not SOL)\n";
     std::cout << "Alice's gas allowance for free txs: " << compute_staking.get_gas_allowance("alice_wallet") / 1e9 << " SOL\n";
+    std::cout << "⚠️  Credits redeemable only from funded RewardVault\n";
     std::cout << "Total staked cores: " << compute_staking.total_cpu_cores() << "\n\n";
 
     // Bob also stakes
-    uint64_t bob_instant_reward = 0;
-    std::string bob_stake = compute_staking.stake_compute("bob_wallet", 8, 32, 8000, bob_instant_reward);
+    uint64_t bob_compute_credits = 0;
+    std::string bob_stake = compute_staking.stake_compute("bob_wallet", 8, 32, 8000, bob_compute_credits);
     std::cout << "Bob staked: 8 CPU cores, 32 GB RAM, 8000 compute units\n";
-    std::cout << "MEMBRA pays instantly: " << bob_instant_reward / 1e9 << " SOL\n";
+    std::cout << "MEMBRA issues compute credits: " << bob_compute_credits << " credit units (not SOL)\n";
     std::cout << "Bob's gas allowance for free txs: " << compute_staking.get_gas_allowance("bob_wallet") / 1e9 << " SOL\n";
     std::cout << "Total staked cores: " << compute_staking.total_cpu_cores() << "\n";
-    std::cout << "Total instant rewards paid: " << compute_staking.total_instant_rewards_paid() / 1e9 << " SOL\n\n";
+    std::cout << "Total compute credits issued: " << compute_staking.total_compute_credits_issued() << " credit units\n\n";
 
     // Feed price data for volatility detection
     std::cout << "=== Step 2: Volatility Oracle ===\n";
@@ -119,14 +121,15 @@ int main() {
 
     // Unstake and claim additional rewards
     std::cout << "=== Step 6: Unstake Compute (after 1 hour minimum) ===\n";
-    uint64_t additional_rewards = 0;
-    bool unstaked = compute_staking.unstake_compute(stake_id, additional_rewards);
+    uint64_t additional_credits = 0;
+    bool unstaked = compute_staking.unstake_compute(stake_id, additional_credits);
     std::cout << "Unstake result: " << (unstaked ? "success" : "failed (too early)") << "\n";
     if (unstaked) {
         auto stake = compute_staking.get_stake(stake_id);
-        std::cout << "Instant reward (received at stake): " << stake->instant_reward / 1e9 << " SOL\n";
-        std::cout << "Additional time-based rewards: " << additional_rewards << " lamports\n";
-        std::cout << "Total earned: " << stake->total_earned << " lamports\n";
+        std::cout << "Compute credits (received at stake): " << stake->compute_credits << " credit units\n";
+        std::cout << "Additional time-based credits: " << additional_credits << " credit units\n";
+        std::cout << "Total credits earned: " << stake->total_credits_earned << " credit units\n";
+        std::cout << "⚠️  Credits must be redeemed from funded RewardVault for SOL\n";
     }
     std::cout << "Remaining staked cores: " << compute_staking.total_cpu_cores() << "\n\n";
 
@@ -255,20 +258,21 @@ int main() {
 
     std::cout << "=== Final Summary ===\n";
     std::cout << "Gas model: Users stake CPU/RAM to send transactions for free\n";
-    std::cout << "Alice staked 4 cores + 16 GB RAM → got 40 SOL instantly + 40 SOL gas allowance\n";
+    std::cout << "Alice staked 4 cores + 16 GB RAM → got 40 compute credits + 40 SOL gas allowance\n";
     std::cout << "Alice sent transaction for free using her gas allowance\n";
     std::cout << "Alice's remaining gas allowance: " << compute_staking.get_gas_allowance("alice_wallet") << " lamports\n";
     std::cout << "Sender paid: 0 SOL (used gas allowance from staked compute)\n";
     std::cout << "Receiver paid: 0 SOL\n";
     std::cout << "GasVault reserves unchanged: " << gas_vault.sol_reserves_sol() << " SOL (not used)\n";
     std::cout << "Total staked compute cores: " << compute_staking.total_cpu_cores() << "\n";
-    std::cout << "Instant rewards paid to stakers: " << compute_staking.total_instant_rewards_paid() / 1e9 << " SOL\n";
+    std::cout << "Total compute credits issued: " << compute_staking.total_compute_credits_issued() << " credit units\n";
     std::cout << "Compute futures market: " << futures_market.open_futures_count() << " open positions\n";
     std::cout << "Compute index: " << compute_oracle.current_index() << "\n";
     std::cout << "M5 benchmark: " << bench_result.inference_ops_per_sec << " ops/sec\n";
     std::cout << "Proof-of-inference receipts: " << proof_of_inference.receipt_count() << "\n";
     std::cout << "Reward vault pool: " << reward_vault.pool_balance() / 1e9 << " SOL\n";
-    std::cout << "⚠️  Earnings depend on network demand, not guaranteed\n";
+    std::cout << "⚠️  Compute credits are NOT SOL. Credits redeemable only from funded vault.\n";
+    std::cout << "⚠️  Earnings require paid API demand or treasury funding.\n";
     std::cout << "ProofBook integrity: " << (proof_book.verify_chain() ? "valid" : "invalid") << "\n";
 
     return 0;

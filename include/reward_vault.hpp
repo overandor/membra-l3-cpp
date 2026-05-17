@@ -23,6 +23,10 @@ struct RewardVaultEntry {
     std::string pool_id;
     uint64_t pool_balance_before;
     uint64_t pool_balance_after;
+    
+    // Funding verification
+    bool payout_possible;
+    std::string funding_source;
 };
 
 class RewardVault {
@@ -67,6 +71,11 @@ public:
     ) {
         std::lock_guard<std::mutex> lock(mutex_);
         
+        // Check if vault is funded
+        if (pool_balance_.load() == 0) {
+            return "";  // Vault not funded - no rewards possible
+        }
+        
         // Check caps
         if (amount_lamports > MAX_REWARD_PER_RECEIPT) {
             return "";  // Exceeds per-receipt cap
@@ -97,6 +106,8 @@ public:
         entry.claimed_at = 0;
         entry.pool_id = "main_pool";
         entry.pool_balance_before = pool_balance_.load();
+        entry.payout_possible = true;
+        entry.funding_source = "treasury_or_api_usage";
         
         entries_[entry_id] = std::move(entry);
         return entry_id;
@@ -111,6 +122,11 @@ public:
         if (it->second.claimed) return false;
         
         RewardVaultEntry& entry = it->second;
+        
+        // Check if vault is funded before paying
+        if (pool_balance_.load() == 0) {
+            return false;  // Vault not funded - cannot pay
+        }
         
         // Double-check pool balance
         if (entry.amount_lamports > pool_balance_.load()) {
