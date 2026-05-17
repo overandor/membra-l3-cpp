@@ -4,6 +4,7 @@
 #include "intent_network.hpp"
 #include "volatility_oracle.hpp"
 #include "compute_staking.hpp"
+#include "compute_futures.hpp"
 
 #include <iostream>
 #include <thread>
@@ -15,10 +16,13 @@ int main() {
     std::cout << "MEMBRA Layer-3 C++ Implementation\n";
     std::cout << "Compute-Collateralized Gas Model with Instant Rewards\n";
     std::cout << "Users stake CPU/RAM to send transactions for free\n";
-    std::cout << "MEMBRA pays stakers instantly when they lock compute\n\n";
+    std::cout << "MEMBRA pays stakers instantly when they lock compute\n";
+    std::cout << "Compute Futures Market: Trade futures on CPU/RAM prices\n\n";
 
     // Initialize components
     ComputeStaking compute_staking;
+    ComputePriceOracle compute_oracle;
+    ComputeFuturesMarket futures_market(&compute_oracle);
     GasVault gas_vault(100'000'000'000, &compute_staking);  // 100 SOL + compute staking
     IntentNetwork intent_network;
     VolatilityOracle oracle;
@@ -118,6 +122,62 @@ int main() {
     }
     std::cout << "Remaining staked cores: " << compute_staking.total_cpu_cores() << "\n\n";
 
+    // === Step 7: Compute Futures Market ===
+    std::cout << "=== Step 7: Compute Futures Market ===\n";
+    
+    // Feed compute prices
+    compute_oracle.feed_price(0.1, 0.05);  // CPU: 0.1 SOL/core, RAM: 0.05 SOL/GB
+    std::cout << "Current compute index: " << compute_oracle.current_index() << "\n";
+    std::cout << "CPU price: " << compute_oracle.current_cpu_price() << " SOL/core\n";
+    std::cout << "RAM price: " << compute_oracle.current_ram_price() << " SOL/GB\n\n";
+    
+    // Charlie opens a forward contract (lock compute for future use)
+    std::string forward_id = futures_market.open_forward(
+        "charlie_wallet",
+        8,      // 8 cores
+        32,     // 32 GB RAM
+        86400.0,  // 24 hours
+        10.0    // 10 SOL collateral
+    );
+    std::cout << "Charlie opened forward contract: " << forward_id << "\n";
+    std::cout << "Locked: 8 cores + 32 GB RAM for 24 hours\n\n";
+    
+    // Dave opens a speculative long (bet price rises)
+    std::string long_id = futures_market.open_long(
+        "dave_wallet",
+        4,      // 4 cores
+        16,     // 16 GB RAM
+        5.0,    // 5x leverage
+        20.0,   // 20 SOL collateral
+        43200.0 // 12 hours
+    );
+    std::cout << "Dave opened long position: " << long_id << "\n";
+    std::cout << "Bet: compute price will rise (5x leverage)\n\n";
+    
+    // Eve opens a speculative short (bet price falls)
+    std::string short_id = futures_market.open_short(
+        "eve_wallet",
+        4,      // 4 cores
+        16,     // 16 GB RAM
+        3.0,    // 3x leverage
+        15.0,   // 15 SOL collateral
+        43200.0 // 12 hours
+    );
+    std::cout << "Eve opened short position: " << short_id << "\n";
+    std::cout << "Bet: compute price will fall (3x leverage)\n\n";
+    
+    std::cout << "Open futures count: " << futures_market.open_futures_count() << "\n\n";
+    
+    // Simulate price movement
+    std::cout << "Simulating compute price movement...\n";
+    compute_oracle.feed_price(0.15, 0.08);  // Price rises
+    std::cout << "New compute index: " << compute_oracle.current_index() << " (+50%)\n";
+    std::cout << "Price change: " << compute_oracle.price_change_pct(10.0) << "%\n\n";
+    
+    // Check liquidations
+    auto liquidated = futures_market.check_liquidations();
+    std::cout << "Liquidated positions: " << liquidated.size() << "\n\n";
+
     std::cout << "=== Final Summary ===\n";
     std::cout << "Gas model: Users stake CPU/RAM to send transactions for free\n";
     std::cout << "Alice staked 4 cores + 16 GB RAM → got 40 SOL instantly + 40 SOL gas allowance\n";
@@ -128,6 +188,8 @@ int main() {
     std::cout << "GasVault reserves unchanged: " << gas_vault.sol_reserves_sol() << " SOL (not used)\n";
     std::cout << "Total staked compute cores: " << compute_staking.total_cpu_cores() << "\n";
     std::cout << "Instant rewards paid to stakers: " << compute_staking.total_instant_rewards_paid() / 1e9 << " SOL\n";
+    std::cout << "Compute futures market: " << futures_market.open_futures_count() << " open positions\n";
+    std::cout << "Compute index: " << compute_oracle.current_index() << "\n";
     std::cout << "ProofBook integrity: " << (proof_book.verify_chain() ? "valid" : "invalid") << "\n";
 
     return 0;
