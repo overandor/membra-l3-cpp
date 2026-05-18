@@ -1,0 +1,1 @@
+/usr/bin/c++  -Wall -Wextra -O3 -march=native -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/test_compute_staking.dir/tests/test_compute_staking.cpp.o -o test_compute_staking  /opt/homebrew/lib/libssl.dylib /opt/homebrew/lib/libcrypto.dylib

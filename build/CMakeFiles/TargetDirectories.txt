@@ -1,0 +1,15 @@
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/membra_l3.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_compute_staking.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_reward_vault.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_gas_vault.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_merkle_provenance.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_ipfs_verifier.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_llm_mempool_governor.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_zk_compute.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/edit_cache.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/rebuild_cache.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/list_install_components.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/install.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/install/local.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/install/strip.dir

@@ -7,6 +7,7 @@
 #include <cstring>
 #include <openssl/sha.h>
 #include <mutex>
+#include <memory>
 
 namespace membra {
 
@@ -41,5 +42,15 @@ inline Address hash_to_address(const Hash& h) {
     std::memcpy(a.data(), h.data(), 20);
     return a;
 }
+
+// Crypto class for use in other components
+class Crypto {
+public:
+    Crypto() = default;
+    ~Crypto() = default;
+    
+    std::array<uint8_t, 32> sha256(const std::vector<uint8_t>& data) const;
+    std::array<uint8_t, 32> sha256(const std::string& data) const;
+};
 
 } // namespace membra

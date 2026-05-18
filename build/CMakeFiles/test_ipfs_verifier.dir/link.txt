@@ -1,0 +1,1 @@
+/usr/bin/c++  -Wall -Wextra -O3 -march=native -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/test_ipfs_verifier.dir/tests/test_ipfs_verifier.cpp.o CMakeFiles/test_ipfs_verifier.dir/src/ipfs_verifier.cpp.o CMakeFiles/test_ipfs_verifier.dir/src/crypto.cpp.o -o test_ipfs_verifier  /opt/homebrew/lib/libssl.dylib /opt/homebrew/lib/libcrypto.dylib
