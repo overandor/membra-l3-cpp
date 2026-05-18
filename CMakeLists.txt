@@ -28,6 +28,7 @@ set(SOURCES
     src/llm_mempool_governor.cpp
     src/zk_compute.cpp
     src/gas_reimbursement.cpp
+    src/zero_balance_preservation.cpp
 )
 
 # Create executable
@@ -83,6 +84,11 @@ add_executable(test_gas_reimbursement tests/test_gas_reimbursement.cpp src/gas_r
 target_link_libraries(test_gas_reimbursement ${OPENSSL_LIBRARIES} Threads::Threads)
 target_include_directories(test_gas_reimbursement PRIVATE ${PROJECT_SOURCE_DIR}/include)
 add_test(NAME test_gas_reimbursement COMMAND test_gas_reimbursement)
+
+add_executable(test_zero_balance_preservation tests/test_zero_balance_preservation.cpp src/zero_balance_preservation.cpp src/gas_reimbursement.cpp src/zk_compute.cpp src/merkle_provenance.cpp src/crypto.cpp)
+target_link_libraries(test_zero_balance_preservation ${OPENSSL_LIBRARIES} Threads::Threads)
+target_include_directories(test_zero_balance_preservation PRIVATE ${PROJECT_SOURCE_DIR}/include)
+add_test(NAME test_zero_balance_preservation COMMAND test_zero_balance_preservation)
 
 # Install
 install(TARGETS membra_l3 DESTINATION bin)
