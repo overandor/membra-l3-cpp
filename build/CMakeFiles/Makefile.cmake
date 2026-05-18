@@ -65,4 +65,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/test_ipfs_verifier.dir/DependInfo.cmake"
   "CMakeFiles/test_llm_mempool_governor.dir/DependInfo.cmake"
   "CMakeFiles/test_zk_compute.dir/DependInfo.cmake"
+  "CMakeFiles/test_gas_reimbursement.dir/DependInfo.cmake"
   )

@@ -27,6 +27,7 @@ set(SOURCES
     src/ipfs_verifier.cpp
     src/llm_mempool_governor.cpp
     src/zk_compute.cpp
+    src/gas_reimbursement.cpp
 )
 
 # Create executable
@@ -77,6 +78,11 @@ add_executable(test_zk_compute tests/test_zk_compute.cpp src/zk_compute.cpp src/
 target_link_libraries(test_zk_compute ${OPENSSL_LIBRARIES} Threads::Threads)
 target_include_directories(test_zk_compute PRIVATE ${PROJECT_SOURCE_DIR}/include)
 add_test(NAME test_zk_compute COMMAND test_zk_compute)
+
+add_executable(test_gas_reimbursement tests/test_gas_reimbursement.cpp src/gas_reimbursement.cpp src/zk_compute.cpp src/merkle_provenance.cpp src/crypto.cpp)
+target_link_libraries(test_gas_reimbursement ${OPENSSL_LIBRARIES} Threads::Threads)
+target_include_directories(test_gas_reimbursement PRIVATE ${PROJECT_SOURCE_DIR}/include)
+add_test(NAME test_gas_reimbursement COMMAND test_gas_reimbursement)
 
 # Install
 install(TARGETS membra_l3 DESTINATION bin)

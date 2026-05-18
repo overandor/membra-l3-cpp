@@ -71,6 +71,7 @@ all: CMakeFiles/test_merkle_provenance.dir/all
 all: CMakeFiles/test_ipfs_verifier.dir/all
 all: CMakeFiles/test_llm_mempool_governor.dir/all
 all: CMakeFiles/test_zk_compute.dir/all
+all: CMakeFiles/test_gas_reimbursement.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -82,6 +83,7 @@ codegen: CMakeFiles/test_merkle_provenance.dir/codegen
 codegen: CMakeFiles/test_ipfs_verifier.dir/codegen
 codegen: CMakeFiles/test_llm_mempool_governor.dir/codegen
 codegen: CMakeFiles/test_zk_compute.dir/codegen
+codegen: CMakeFiles/test_gas_reimbursement.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -97,6 +99,7 @@ clean: CMakeFiles/test_merkle_provenance.dir/clean
 clean: CMakeFiles/test_ipfs_verifier.dir/clean
 clean: CMakeFiles/test_llm_mempool_governor.dir/clean
 clean: CMakeFiles/test_zk_compute.dir/clean
+clean: CMakeFiles/test_gas_reimbursement.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -106,12 +109,12 @@ clean: CMakeFiles/test_zk_compute.dir/clean
 CMakeFiles/membra_l3.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/membra_l3.dir/build.make CMakeFiles/membra_l3.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/membra_l3.dir/build.make CMakeFiles/membra_l3.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Built target membra_l3"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8 "Built target membra_l3"
 .PHONY : CMakeFiles/membra_l3.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/membra_l3.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/membra_l3.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles 0
 .PHONY : CMakeFiles/membra_l3.dir/rule
@@ -123,7 +126,7 @@ membra_l3: CMakeFiles/membra_l3.dir/rule
 # codegen rule for target.
 CMakeFiles/membra_l3.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/membra_l3.dir/build.make CMakeFiles/membra_l3.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Finished codegen for target membra_l3"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8 "Finished codegen for target membra_l3"
 .PHONY : CMakeFiles/membra_l3.dir/codegen
 
 # clean rule for target.
@@ -138,7 +141,7 @@ CMakeFiles/membra_l3.dir/clean:
 CMakeFiles/test_compute_staking.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_compute_staking.dir/build.make CMakeFiles/test_compute_staking.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_compute_staking.dir/build.make CMakeFiles/test_compute_staking.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=8,9 "Built target test_compute_staking"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=9,10 "Built target test_compute_staking"
 .PHONY : CMakeFiles/test_compute_staking.dir/all
 
 # Build rule for subdir invocation for target.
@@ -155,7 +158,7 @@ test_compute_staking: CMakeFiles/test_compute_staking.dir/rule
 # codegen rule for target.
 CMakeFiles/test_compute_staking.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_compute_staking.dir/build.make CMakeFiles/test_compute_staking.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=8,9 "Finished codegen for target test_compute_staking"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=9,10 "Finished codegen for target test_compute_staking"
 .PHONY : CMakeFiles/test_compute_staking.dir/codegen
 
 # clean rule for target.
@@ -170,7 +173,7 @@ CMakeFiles/test_compute_staking.dir/clean:
 CMakeFiles/test_reward_vault.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_reward_vault.dir/build.make CMakeFiles/test_reward_vault.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_reward_vault.dir/build.make CMakeFiles/test_reward_vault.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=25,26 "Built target test_reward_vault"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=32,33 "Built target test_reward_vault"
 .PHONY : CMakeFiles/test_reward_vault.dir/all
 
 # Build rule for subdir invocation for target.
@@ -187,7 +190,7 @@ test_reward_vault: CMakeFiles/test_reward_vault.dir/rule
 # codegen rule for target.
 CMakeFiles/test_reward_vault.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_reward_vault.dir/build.make CMakeFiles/test_reward_vault.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=25,26 "Finished codegen for target test_reward_vault"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=32,33 "Finished codegen for target test_reward_vault"
 .PHONY : CMakeFiles/test_reward_vault.dir/codegen
 
 # clean rule for target.
@@ -202,7 +205,7 @@ CMakeFiles/test_reward_vault.dir/clean:
 CMakeFiles/test_gas_vault.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_vault.dir/build.make CMakeFiles/test_gas_vault.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_vault.dir/build.make CMakeFiles/test_gas_vault.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=10,11 "Built target test_gas_vault"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=17,18 "Built target test_gas_vault"
 .PHONY : CMakeFiles/test_gas_vault.dir/all
 
 # Build rule for subdir invocation for target.
@@ -219,7 +222,7 @@ test_gas_vault: CMakeFiles/test_gas_vault.dir/rule
 # codegen rule for target.
 CMakeFiles/test_gas_vault.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_vault.dir/build.make CMakeFiles/test_gas_vault.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=10,11 "Finished codegen for target test_gas_vault"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=17,18 "Finished codegen for target test_gas_vault"
 .PHONY : CMakeFiles/test_gas_vault.dir/codegen
 
 # clean rule for target.
@@ -234,7 +237,7 @@ CMakeFiles/test_gas_vault.dir/clean:
 CMakeFiles/test_merkle_provenance.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_merkle_provenance.dir/build.make CMakeFiles/test_merkle_provenance.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_merkle_provenance.dir/build.make CMakeFiles/test_merkle_provenance.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=21,22,23,24 "Built target test_merkle_provenance"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=28,29,30,31 "Built target test_merkle_provenance"
 .PHONY : CMakeFiles/test_merkle_provenance.dir/all
 
 # Build rule for subdir invocation for target.
@@ -251,7 +254,7 @@ test_merkle_provenance: CMakeFiles/test_merkle_provenance.dir/rule
 # codegen rule for target.
 CMakeFiles/test_merkle_provenance.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_merkle_provenance.dir/build.make CMakeFiles/test_merkle_provenance.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=21,22,23,24 "Finished codegen for target test_merkle_provenance"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=28,29,30,31 "Finished codegen for target test_merkle_provenance"
 .PHONY : CMakeFiles/test_merkle_provenance.dir/codegen
 
 # clean rule for target.
@@ -266,7 +269,7 @@ CMakeFiles/test_merkle_provenance.dir/clean:
 CMakeFiles/test_ipfs_verifier.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ipfs_verifier.dir/build.make CMakeFiles/test_ipfs_verifier.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ipfs_verifier.dir/build.make CMakeFiles/test_ipfs_verifier.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=12,13,14,15 "Built target test_ipfs_verifier"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=19,20,21,22 "Built target test_ipfs_verifier"
 .PHONY : CMakeFiles/test_ipfs_verifier.dir/all
 
 # Build rule for subdir invocation for target.
@@ -283,7 +286,7 @@ test_ipfs_verifier: CMakeFiles/test_ipfs_verifier.dir/rule
 # codegen rule for target.
 CMakeFiles/test_ipfs_verifier.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ipfs_verifier.dir/build.make CMakeFiles/test_ipfs_verifier.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=12,13,14,15 "Finished codegen for target test_ipfs_verifier"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=19,20,21,22 "Finished codegen for target test_ipfs_verifier"
 .PHONY : CMakeFiles/test_ipfs_verifier.dir/codegen
 
 # clean rule for target.
@@ -298,7 +301,7 @@ CMakeFiles/test_ipfs_verifier.dir/clean:
 CMakeFiles/test_llm_mempool_governor.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_llm_mempool_governor.dir/build.make CMakeFiles/test_llm_mempool_governor.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_llm_mempool_governor.dir/build.make CMakeFiles/test_llm_mempool_governor.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=16,17,18,19,20 "Built target test_llm_mempool_governor"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=23,24,25,26,27 "Built target test_llm_mempool_governor"
 .PHONY : CMakeFiles/test_llm_mempool_governor.dir/all
 
 # Build rule for subdir invocation for target.
@@ -315,7 +318,7 @@ test_llm_mempool_governor: CMakeFiles/test_llm_mempool_governor.dir/rule
 # codegen rule for target.
 CMakeFiles/test_llm_mempool_governor.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_llm_mempool_governor.dir/build.make CMakeFiles/test_llm_mempool_governor.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=16,17,18,19,20 "Finished codegen for target test_llm_mempool_governor"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=23,24,25,26,27 "Finished codegen for target test_llm_mempool_governor"
 .PHONY : CMakeFiles/test_llm_mempool_governor.dir/codegen
 
 # clean rule for target.
@@ -330,7 +333,7 @@ CMakeFiles/test_llm_mempool_governor.dir/clean:
 CMakeFiles/test_zk_compute.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=27,28,29,30,31 "Built target test_zk_compute"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=34,35,36,37,38 "Built target test_zk_compute"
 .PHONY : CMakeFiles/test_zk_compute.dir/all
 
 # Build rule for subdir invocation for target.
@@ -347,13 +350,45 @@ test_zk_compute: CMakeFiles/test_zk_compute.dir/rule
 # codegen rule for target.
 CMakeFiles/test_zk_compute.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=27,28,29,30,31 "Finished codegen for target test_zk_compute"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=34,35,36,37,38 "Finished codegen for target test_zk_compute"
 .PHONY : CMakeFiles/test_zk_compute.dir/codegen
 
 # clean rule for target.
 CMakeFiles/test_zk_compute.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/clean
 .PHONY : CMakeFiles/test_zk_compute.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/test_gas_reimbursement.dir
+
+# All Build rule for target.
+CMakeFiles/test_gas_reimbursement.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=11,12,13,14,15,16 "Built target test_gas_reimbursement"
+.PHONY : CMakeFiles/test_gas_reimbursement.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/test_gas_reimbursement.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_gas_reimbursement.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles 0
+.PHONY : CMakeFiles/test_gas_reimbursement.dir/rule
+
+# Convenience name for target.
+test_gas_reimbursement: CMakeFiles/test_gas_reimbursement.dir/rule
+.PHONY : test_gas_reimbursement
+
+# codegen rule for target.
+CMakeFiles/test_gas_reimbursement.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles --progress-num=11,12,13,14,15,16 "Finished codegen for target test_gas_reimbursement"
+.PHONY : CMakeFiles/test_gas_reimbursement.dir/codegen
+
+# clean rule for target.
+CMakeFiles/test_gas_reimbursement.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/clean
+.PHONY : CMakeFiles/test_gas_reimbursement.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

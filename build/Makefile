@@ -275,6 +275,19 @@ test_zk_compute/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/build
 .PHONY : test_zk_compute/fast
 
+#=============================================================================
+# Target rules for targets named test_gas_reimbursement
+
+# Build rule for target.
+test_gas_reimbursement: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gas_reimbursement
+.PHONY : test_gas_reimbursement
+
+# fast build rule for target.
+test_gas_reimbursement/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/build
+.PHONY : test_gas_reimbursement/fast
+
 src/crypto.o: src/crypto.cpp.o
 .PHONY : src/crypto.o
 
@@ -285,6 +298,7 @@ src/crypto.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ipfs_verifier.dir/build.make CMakeFiles/test_ipfs_verifier.dir/src/crypto.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_llm_mempool_governor.dir/build.make CMakeFiles/test_llm_mempool_governor.dir/src/crypto.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/src/crypto.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/crypto.cpp.o
 .PHONY : src/crypto.cpp.o
 
 src/crypto.i: src/crypto.cpp.i
@@ -297,6 +311,7 @@ src/crypto.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ipfs_verifier.dir/build.make CMakeFiles/test_ipfs_verifier.dir/src/crypto.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_llm_mempool_governor.dir/build.make CMakeFiles/test_llm_mempool_governor.dir/src/crypto.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/src/crypto.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/crypto.cpp.i
 .PHONY : src/crypto.cpp.i
 
 src/crypto.s: src/crypto.cpp.s
@@ -309,7 +324,35 @@ src/crypto.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ipfs_verifier.dir/build.make CMakeFiles/test_ipfs_verifier.dir/src/crypto.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_llm_mempool_governor.dir/build.make CMakeFiles/test_llm_mempool_governor.dir/src/crypto.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/src/crypto.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/crypto.cpp.s
 .PHONY : src/crypto.cpp.s
+
+src/gas_reimbursement.o: src/gas_reimbursement.cpp.o
+.PHONY : src/gas_reimbursement.o
+
+# target to build an object file
+src/gas_reimbursement.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/membra_l3.dir/build.make CMakeFiles/membra_l3.dir/src/gas_reimbursement.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/gas_reimbursement.cpp.o
+.PHONY : src/gas_reimbursement.cpp.o
+
+src/gas_reimbursement.i: src/gas_reimbursement.cpp.i
+.PHONY : src/gas_reimbursement.i
+
+# target to preprocess a source file
+src/gas_reimbursement.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/membra_l3.dir/build.make CMakeFiles/membra_l3.dir/src/gas_reimbursement.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/gas_reimbursement.cpp.i
+.PHONY : src/gas_reimbursement.cpp.i
+
+src/gas_reimbursement.s: src/gas_reimbursement.cpp.s
+.PHONY : src/gas_reimbursement.s
+
+# target to generate assembly for a file
+src/gas_reimbursement.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/membra_l3.dir/build.make CMakeFiles/membra_l3.dir/src/gas_reimbursement.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/gas_reimbursement.cpp.s
+.PHONY : src/gas_reimbursement.cpp.s
 
 src/ipfs_verifier.o: src/ipfs_verifier.cpp.o
 .PHONY : src/ipfs_verifier.o
@@ -398,6 +441,7 @@ src/merkle_provenance.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_merkle_provenance.dir/build.make CMakeFiles/test_merkle_provenance.dir/src/merkle_provenance.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_llm_mempool_governor.dir/build.make CMakeFiles/test_llm_mempool_governor.dir/src/merkle_provenance.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/src/merkle_provenance.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/merkle_provenance.cpp.o
 .PHONY : src/merkle_provenance.cpp.o
 
 src/merkle_provenance.i: src/merkle_provenance.cpp.i
@@ -409,6 +453,7 @@ src/merkle_provenance.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_merkle_provenance.dir/build.make CMakeFiles/test_merkle_provenance.dir/src/merkle_provenance.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_llm_mempool_governor.dir/build.make CMakeFiles/test_llm_mempool_governor.dir/src/merkle_provenance.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/src/merkle_provenance.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/merkle_provenance.cpp.i
 .PHONY : src/merkle_provenance.cpp.i
 
 src/merkle_provenance.s: src/merkle_provenance.cpp.s
@@ -420,6 +465,7 @@ src/merkle_provenance.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_merkle_provenance.dir/build.make CMakeFiles/test_merkle_provenance.dir/src/merkle_provenance.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_llm_mempool_governor.dir/build.make CMakeFiles/test_llm_mempool_governor.dir/src/merkle_provenance.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/src/merkle_provenance.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/merkle_provenance.cpp.s
 .PHONY : src/merkle_provenance.cpp.s
 
 src/zk_compute.o: src/zk_compute.cpp.o
@@ -429,6 +475,7 @@ src/zk_compute.o: src/zk_compute.cpp.o
 src/zk_compute.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/membra_l3.dir/build.make CMakeFiles/membra_l3.dir/src/zk_compute.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/src/zk_compute.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/zk_compute.cpp.o
 .PHONY : src/zk_compute.cpp.o
 
 src/zk_compute.i: src/zk_compute.cpp.i
@@ -438,6 +485,7 @@ src/zk_compute.i: src/zk_compute.cpp.i
 src/zk_compute.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/membra_l3.dir/build.make CMakeFiles/membra_l3.dir/src/zk_compute.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/src/zk_compute.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/zk_compute.cpp.i
 .PHONY : src/zk_compute.cpp.i
 
 src/zk_compute.s: src/zk_compute.cpp.s
@@ -447,6 +495,7 @@ src/zk_compute.s: src/zk_compute.cpp.s
 src/zk_compute.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/membra_l3.dir/build.make CMakeFiles/membra_l3.dir/src/zk_compute.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_zk_compute.dir/build.make CMakeFiles/test_zk_compute.dir/src/zk_compute.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/src/zk_compute.cpp.s
 .PHONY : src/zk_compute.cpp.s
 
 tests/test_compute_staking.o: tests/test_compute_staking.cpp.o
@@ -472,6 +521,30 @@ tests/test_compute_staking.s: tests/test_compute_staking.cpp.s
 tests/test_compute_staking.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_compute_staking.dir/build.make CMakeFiles/test_compute_staking.dir/tests/test_compute_staking.cpp.s
 .PHONY : tests/test_compute_staking.cpp.s
+
+tests/test_gas_reimbursement.o: tests/test_gas_reimbursement.cpp.o
+.PHONY : tests/test_gas_reimbursement.o
+
+# target to build an object file
+tests/test_gas_reimbursement.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/tests/test_gas_reimbursement.cpp.o
+.PHONY : tests/test_gas_reimbursement.cpp.o
+
+tests/test_gas_reimbursement.i: tests/test_gas_reimbursement.cpp.i
+.PHONY : tests/test_gas_reimbursement.i
+
+# target to preprocess a source file
+tests/test_gas_reimbursement.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/tests/test_gas_reimbursement.cpp.i
+.PHONY : tests/test_gas_reimbursement.cpp.i
+
+tests/test_gas_reimbursement.s: tests/test_gas_reimbursement.cpp.s
+.PHONY : tests/test_gas_reimbursement.s
+
+# target to generate assembly for a file
+tests/test_gas_reimbursement.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_gas_reimbursement.dir/build.make CMakeFiles/test_gas_reimbursement.dir/tests/test_gas_reimbursement.cpp.s
+.PHONY : tests/test_gas_reimbursement.cpp.s
 
 tests/test_gas_vault.o: tests/test_gas_vault.cpp.o
 .PHONY : tests/test_gas_vault.o
@@ -632,6 +705,7 @@ help:
 	@echo "... test"
 	@echo "... membra_l3"
 	@echo "... test_compute_staking"
+	@echo "... test_gas_reimbursement"
 	@echo "... test_gas_vault"
 	@echo "... test_ipfs_verifier"
 	@echo "... test_llm_mempool_governor"
@@ -641,6 +715,9 @@ help:
 	@echo "... src/crypto.o"
 	@echo "... src/crypto.i"
 	@echo "... src/crypto.s"
+	@echo "... src/gas_reimbursement.o"
+	@echo "... src/gas_reimbursement.i"
+	@echo "... src/gas_reimbursement.s"
 	@echo "... src/ipfs_verifier.o"
 	@echo "... src/ipfs_verifier.i"
 	@echo "... src/ipfs_verifier.s"
@@ -659,6 +736,9 @@ help:
 	@echo "... tests/test_compute_staking.o"
 	@echo "... tests/test_compute_staking.i"
 	@echo "... tests/test_compute_staking.s"
+	@echo "... tests/test_gas_reimbursement.o"
+	@echo "... tests/test_gas_reimbursement.i"
+	@echo "... tests/test_gas_reimbursement.s"
 	@echo "... tests/test_gas_vault.o"
 	@echo "... tests/test_gas_vault.i"
 	@echo "... tests/test_gas_vault.s"

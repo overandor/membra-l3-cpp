@@ -6,6 +6,7 @@
 /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_ipfs_verifier.dir
 /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_llm_mempool_governor.dir
 /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_zk_compute.dir
+/Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test_gas_reimbursement.dir
 /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/test.dir
 /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/edit_cache.dir
 /Users/alep/Downloads/membra-l3-cpp/build/CMakeFiles/rebuild_cache.dir
